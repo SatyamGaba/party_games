@@ -1956,3 +1956,10 @@
 @media (prefers-reduced-motion: no-preference) {
   .fff-verdict-effects span { animation: fff-verdict-fall 2.8s ease-in forwards; }
 }
+
+@media (orientation: landscape) {
+  [data-mode="tv"] .room-layout.fff-tv-sidebar-layout {
+    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
+    gap: 2vw;
+  }
+}
