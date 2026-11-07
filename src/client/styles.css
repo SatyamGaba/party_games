@@ -1757,6 +1757,13 @@
     color: var(--foreground);
     letter-spacing: 0.08em;
   }
+  .fff-player .score-panel {
+    padding: 20px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+  }
   .fff-player .play-panel {
     background: transparent;
     border: 0;
