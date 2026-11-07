@@ -1,0 +1,101 @@
+title: Test Pack
+questions:
+  - id: festival-of-colours
+    type: text
+    prompt: Which Indian festival is widely known as the festival of colours?
+    answer: Holi
+
+  - id: sholay-villain
+    type: text
+    prompt: What is the name of the villain played by Amjad Khan in Sholay?
+    answer: Gabbar Singh
+
+  - id: pink-city
+    type: text
+    prompt: Which Indian city is popularly known as the Pink City?
+    answer: Jaipur
+
+  - id: dosa
+    type: text
+    prompt: Which thin South Indian dish, made from fermented rice and urad dal batter, is often served with sambar and chutney?
+    answer: Dosa (accept dosai)
+
+  - id: cricket-world-cup
+    type: text
+    prompt: Who captained India to victory in the 2011 men's Cricket World Cup?
+    answer: Mahendra Singh Dhoni (accept MS Dhoni or Dhoni)
+
+  - id: taj-mahal
+    type: text
+    prompt: In which city is the Taj Mahal located?
+    answer: Agra
+
+  - id: three-idiots
+    type: text
+    prompt: In the Hindi film 3 Idiots, which actor plays Rancho?
+    answer: Aamir Khan
+
+  - id: onam
+    type: text
+    prompt: Onam is a major harvest festival associated with which Indian state?
+    answer: Kerala
+
+  - id: rupees
+    type: text
+    prompt: How many paise make one Indian rupee?
+    answer: "100 (one hundred)"
+
+  - id: dandi-march
+    type: text
+    prompt: Which everyday ingredient was at the centre of Mahatma Gandhi's Dandi March in 1930?
+    answer: Salt
+
+  - id: vada-pav
+    type: text
+    prompt: Which Mumbai street food has a fried potato fritter tucked inside a bread bun?
+    answer: Vada pav (accept wada pav)
+
+  - id: chess
+    type: text
+    prompt: Which chess player became India's first Grandmaster in 1988?
+    answer: Viswanathan Anand (accept Vishy Anand or Anand)
+
+  - id: rangoli
+    type: text
+    prompt: What is the decorative floor art, often made with coloured powders during Diwali, commonly called?
+    answer: Rangoli (accept kolam or muggu)
+
+  - id: lagaan
+    type: text
+    prompt: In the Hindi film Lagaan, the villagers challenge the British officers at which sport?
+    answer: Cricket
+
+  - id: national-bird
+    type: text
+    prompt: What is India's national bird?
+    answer: Indian peacock (accept Indian peafowl or peacock)
+
+  - id: chandrayaans
+    type: text
+    prompt: Which Indian space agency launched the Chandrayaan missions?
+    answer: ISRO (Indian Space Research Organisation)
+
+  - id: punjab-dance
+    type: text
+    prompt: Which energetic Punjabi folk dance is traditionally associated with the harvest and Baisakhi?
+    answer: Bhangra
+
+  - id: charminar
+    type: text
+    prompt: In which Indian city would you find the Charminar?
+    answer: Hyderabad
+
+  - id: jalebi
+    type: text
+    prompt: Which syrup-soaked Indian sweet is commonly made in orange or golden spirals?
+    answer: Jalebi
+
+  - id: republic-day
+    type: text
+    prompt: On which date each year does India celebrate Republic Day?
+    answer: 26 January (accept January 26)
