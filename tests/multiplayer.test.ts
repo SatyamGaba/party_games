@@ -15,7 +15,7 @@ class TestDiceRoom extends DiceRoom {
     return 5;
   }
   protected rollDelayMs = 80;
-  protected reconnectSeconds = 0.4;
+  protected reconnectSeconds = 1;
   protected turnGraceMs = 300;
 }
 const application = createPartyServer({ "roll-the-dice": TestDiceRoom });
@@ -310,14 +310,14 @@ describe("real Colyseus clients", () => {
     const id = me(host);
     host.reconnection.enabled = false;
     host.connection.close(4001);
-    // Turn grace (300ms) unblocks the round while the seat is still held.
+    // Turn grace (300ms) + roll (80ms) unblocks the round while the seat is still held.
     await waitFor(() => guest.state.game.phase === "result");
     expect(guest.state.game.skipped.includes(id)).toBe(true);
     expect(guest.state.players.get(id)?.departed).toBe(false);
     expect(guest.state.players.get(id)?.connected).toBe(false);
     // The offline host shouldn't block everyone else from starting.
     expect((await request(guest, "start")).ok).toBe(true);
-    // Hold (400ms) expires: the seat is released and hosting moves on.
+    // Hold (1s) expires: the seat is released and hosting moves on.
     await waitFor(() => guest.state.players.get(id)?.departed === true);
     expect(guest.state.hostId).toBe(me(guest));
   });
