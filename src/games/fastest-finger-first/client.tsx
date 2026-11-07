@@ -59,7 +59,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
   const display = session.role === "display",
     host = !display && snapshot.hostId === you;
   const buzzer = useBuzzerSound(
-    display && connected && !game.paused && ["ready", "open"].includes(game.phase),
+    display && connected && !game.paused && game.questionType === "text" && game.phase === "open",
   );
   const previousBuzz = useRef({ scope: game.scope, answering: game.answering });
   useEffect(() => {
@@ -452,7 +452,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
       className={`room-page fff-page ${display ? "fff-display" : !host ? "fff-player" : ""}`}
     >
       {display && !buzzer.enabled && (
-        <Button onClick={buzzer.enable}>Enable buzzer sound on TV</Button>
+        <Button onClick={buzzer.enable}>Enable TV sound</Button>
       )}
       {host && (
         <div className="room-title">
