@@ -110,7 +110,8 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
     }
   }
   return (
-    <main className={"room-page " + (display ? "tv-mode" : "")}>
+    <main className="room-page">
+      {!display && (
       <div className="room-title">
         <div>
           <div className="eyebrow">THE GAME IS ON</div>
@@ -126,6 +127,7 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
           </Button>
         </div>
       </div>
+      )}
       <div className="room-layout">
         <section className="play-panel">
           <div className="round-bar">
@@ -334,10 +336,12 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
               Everyone who guesses right gets points.
             </p>
           </div>
-          <p className="disconnect-help">
-            Disconnected players get 30 seconds to return before an unanswered
-            guess is skipped. New players join the next round.
-          </p>
+          {!display && (
+            <p className="disconnect-help">
+              Disconnected players get 30 seconds to return before an
+              unanswered guess is skipped. New players join the next round.
+            </p>
+          )}
         </aside>
       </div>
     </main>

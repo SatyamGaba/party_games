@@ -9,6 +9,9 @@ import {
   Sparkles,
   Check,
   ArrowRight,
+  ArrowLeft,
+  Maximize,
+  Minimize,
 } from "lucide-react";
 import {
   Button,
@@ -53,9 +56,24 @@ function App() {
   const [code, setCode] = useState(params.get("room") ?? "");
   const [busy, setBusy] = useState(false);
   const game = room ? clientGames[room.snapshot.gameId] : null;
+  const tv = room?.role === "display";
   useEffect(() => {
     if (room) setModal(null);
   }, [room?.code]);
+  useEffect(() => {
+    if (tv) document.documentElement.dataset.mode = "tv";
+    else delete document.documentElement.dataset.mode;
+  }, [tv]);
+  const [fullscreen, setFullscreen] = useState(false);
+  useEffect(() => {
+    const sync = () => setFullscreen(document.fullscreenElement !== null);
+    document.addEventListener("fullscreenchange", sync);
+    return () => document.removeEventListener("fullscreenchange", sync);
+  }, []);
+  function toggleFullscreen() {
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else void document.documentElement.requestFullscreen().catch(() => {});
+  }
   async function enter(event: FormEvent) {
     event.preventDefault();
     setBusy(true);
@@ -76,6 +94,36 @@ function App() {
   return (
     <div className="shell">
       <ThemeColor />
+      {tv && room && game ? (
+        <header className="tv-header">
+          <div className="tv-actions">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={() => {
+                if (document.fullscreenElement) void document.exitFullscreen();
+                leave();
+              }}
+            >
+              <ArrowLeft size={18} /> Back
+            </Button>
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={toggleFullscreen}
+              aria-label={fullscreen ? "Exit full screen" : "Full screen"}
+            >
+              {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+            </Button>
+          </div>
+          <h1>{game.manifest.name}</h1>
+          <div className="tv-code">
+            <span className={"status-dot " + (online && ready ? "live" : "")} />
+            <span>JOIN AT {location.host}</span>
+            <strong>{room.code}</strong>
+          </div>
+        </header>
+      ) : (
       <header className="site-header">
         <a
           className="brand"
@@ -106,6 +154,7 @@ function App() {
           )}
         </div>
       </header>
+      )}
       {error && !modal && (
         <Notice onDismiss={() => setError("")}>{error}</Notice>
       )}
