@@ -1,5 +1,5 @@
 import { randomInt, randomUUID } from "node:crypto";
-import type { Client } from "@colyseus/core";
+import type { Client, Delayed } from "@colyseus/core";
 import { z } from "zod";
 import { PartyRoom } from "../../platform/server/party-room";
 import { SubmissionLedger } from "../../platform/server/submissions";
@@ -11,7 +11,12 @@ import { manifest } from "./manifest";
 const answerSchema = z.number().int().min(1).max(6);
 export class DiceRoom extends PartyRoom<DiceRoomState> {
   protected allowsDisplay = manifest.tv;
+  protected lateJoin = manifest.lateJoin;
   protected rollDelayMs = 2800;
+  protected acceptsNewPlayers() {
+    const phase = this.state.game.phase;
+    return phase === "lobby" || phase === "result";
+  }
   private submissions = new SubmissionLedger();
   private result: number | null = null;
   private instanceId = randomUUID();
@@ -35,60 +40,59 @@ export class DiceRoom extends PartyRoom<DiceRoomState> {
       game.roster.push(...players.map((p) => p.id));
       game.skipped.clear();
       for (const [id, guess] of game.guesses)
-        this.clients.getById(id)?.view?.remove(guess);
+        this.clientOf(id)?.view?.remove(guess);
       game.guesses.clear();
       this.submissions.clear();
       this.result = null;
       for (const player of players) {
         const guess = new Guess();
         game.guesses.set(player.id, guess);
-        const client = this.clients.getById(player.id);
-        client?.view?.add(guess);
+        this.clientOf(player.id)?.view?.add(guess);
       }
     });
     this.registerMessage(
       "submit",
       submissionSchema.extend({ answer: answerSchema }),
       (client, payload) => {
-        this.requirePlayer(client);
+        const id = this.requirePlayer(client).id;
         const game = this.state.game;
         if (payload.scope !== String(game.round))
           throw new UserError("That round has ended.");
-        if (
-          this.submissions.check(
-            client.sessionId,
-            payload.submissionId,
-            payload.answer,
-          )
-        )
+        if (this.submissions.check(id, payload.submissionId, payload.answer))
           return;
         if (game.phase !== "betting")
           throw new UserError("Answers are closed.");
-        if (
-          !game.roster.includes(client.sessionId) ||
-          game.skipped.includes(client.sessionId)
-        )
+        if (!game.roster.includes(id) || game.skipped.includes(id))
           throw new UserError("You'll join the next round.");
-        const guess = game.guesses.get(client.sessionId)!;
+        const guess = game.guesses.get(id)!;
         guess.value = payload.answer;
         guess.locked = true;
-        this.submissions.accept(
-          client.sessionId,
-          payload.submissionId,
-          payload.answer,
-        );
+        this.submissions.accept(id, payload.submissionId, payload.answer);
         this.maybeRoll();
       },
     );
   }
-  protected participantJoined(client: Client) {
-    const ownGuess = this.state.game.guesses.get(client.sessionId);
+  /**
+   * A player keeps their seat for minutes, but the round shouldn't stall that
+   * long: an unanswered guess is skipped after this grace period.
+   */
+  protected turnGraceMs = 30_000;
+  private graceTimers = new Map<string, Delayed>();
+  protected participantJoined(client: Client, id: string) {
+    this.graceTimers.get(id)?.clear();
+    this.graceTimers.delete(id);
+    const ownGuess = this.state.game.guesses.get(id);
     if (ownGuess) client.view?.add(ownGuess);
-    if (
-      !this.state.hostId &&
-      this.state.players.get(client.sessionId)?.role === "player"
-    )
-      this.state.hostId = client.sessionId;
+  }
+  protected participantDropped(id: string) {
+    this.graceTimers.get(id)?.clear();
+    this.graceTimers.set(
+      id,
+      this.clock.setTimeout(() => {
+        this.graceTimers.delete(id);
+        this.participantLeft(id);
+      }, this.turnGraceMs),
+    );
   }
   protected participantLeft(id: string) {
     const game = this.state.game;

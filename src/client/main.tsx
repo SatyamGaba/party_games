@@ -332,11 +332,33 @@ function App() {
       )}
       {!online && room && (
         <Notice>
-          Connection lost. Reconnecting automatically. Your locked answer is
-          saved on the server.
+          Connection lost. Reconnecting automatically. Your place, score and
+          locked answers are saved on the server.
         </Notice>
       )}
-      {room && game ? (
+      {!room && !ready && (
+        <p className="waiting-note" role="status">
+          Getting you back into your room…
+        </p>
+      )}
+      {room && game && room.snapshot.players[room.you]?.waiting ? (
+        <main className="home">
+          <PageHeader
+            eyebrow="WAITING ROOM"
+            title={
+              <>
+                You're in.
+                <br />
+                <span className="muted-title">Hang tight.</span>
+              </>
+            }
+          />
+          <p className="waiting-note" role="status">
+            A round of {game.manifest.name} is in progress. You'll join
+            automatically as soon as it ends, so you don't miss the next one.
+          </p>
+        </main>
+      ) : room && game ? (
         <Suspense
           fallback={
             <p className="waiting-note" role="status">

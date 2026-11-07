@@ -305,8 +305,10 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
                       {player.departed
                         ? "Left the room"
                         : !player.connected
-                          ? "Reconnecting…"
-                          : game.phase === "betting" &&
+                          ? "Disconnected"
+                          : player.waiting
+                            ? "In the waiting room"
+                            : game.phase === "betting" &&
                               game.skipped.includes(player.id)
                             ? "Next round"
                             : game.phase === "betting" &&
@@ -350,8 +352,9 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
           </div>
           {!display && (
             <p className="disconnect-help">
-              Disconnected players get 30 seconds to return before an
-              unanswered guess is skipped. New players join the next round.
+              Closed the tab by mistake? Just reopen the link: you'll get your
+              seat and score back for up to 5 minutes. An unanswered guess is
+              skipped after 30 seconds. New players wait for the next round.
             </p>
           )}
         </aside>

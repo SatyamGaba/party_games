@@ -6,4 +6,5 @@ export const manifest = {
   minPlayers: 1,
   maxPlayers: 24,
   tv: true,
+  lateJoin: "between-rounds",
 } as const;

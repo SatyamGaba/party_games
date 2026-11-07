@@ -5,6 +5,8 @@ export const joinSchema = z
   .object({
     role: roleSchema.default("player"),
     name: z.string().trim().max(LIMITS.nameLength).default(""),
+    /** Device secret that lets a returning person reclaim their seat. Never synced. */
+    playerKey: z.string().min(16).max(64).optional(),
   })
   .refine((v) => v.role === "display" || v.name.length > 0, "Enter your name.");
 export const codeSchema = z

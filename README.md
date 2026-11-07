@@ -51,7 +51,13 @@ Caddy handles HTTPS and WebSocket upgrades. Only publish the proxy endpoint; the
 
 Roll the Dice supports 1–24 players and separate display clients. The host plays and starts each round. Players lock one guess from 1–6; guesses are private until reveal. Once all eligible players answer, a cryptographic server roll is animated for 2.8 seconds, then exact matches receive 10 points each.
 
-Late arrivals play next round. Dropped connections have 30 seconds to return; unanswered guesses are skipped after expiry. Accepted answers remain eligible. When the host leaves permanently, control goes to the earliest connected player. Rooms disappear when no clients or reconnection reservations remain. Reconnection tokens are stored per tab, refreshed after reconnecting, and never logged.
+Late arrivals wait in the waiting room until the current round ends (`lateJoin: "between-rounds"` in the manifest). Unanswered guesses of disconnected players are skipped after 30 seconds. Accepted answers remain eligible. When the host leaves permanently, control goes to the earliest connected player; while the host is offline, any player may start the next round. Rooms disappear when no clients or reconnection reservations remain.
+
+## Rejoining (all games)
+
+Each participant has a stable id for the life of the room; games key per-player state by `idOf(client)`, not by the connection's `sessionId`. Disconnected participants are shown as "Disconnected" and keep their seat for 5 minutes (`LIMITS.reconnectSeconds`). The client keeps the reconnection token and a random per-device player key in `localStorage`, so closing the tab, a reload, or a phone discarding the page brings the same person back. If the token no longer works, the client rejoins with the player key and gets their seat, score and answers back, even after the hold expired, as long as the room still exists. Returning players skip the waiting room. Opening the room in a second tab moves the seat there; the old tab is told it was replaced. Pressing "Leave room" gives the seat up for good. Keys and tokens are never synced to other clients or logged.
+
+Games opt into the waiting room with `lateJoin: "between-rounds"` and by overriding `acceptsNewPlayers()`; waiting players are admitted automatically when it returns true.
 
 ## Adding games
 
