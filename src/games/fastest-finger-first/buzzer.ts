@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-/** A short, prominent buzzer generated locally; no media download latency. */
+/** A short, gentle chime generated locally; no media download latency. */
 export function useBuzzerSound(ticking = false) {
   const context = useRef<AudioContext | null>(null);
   const [enabled, setEnabled] = useState(false);
@@ -19,19 +19,21 @@ export function useBuzzerSound(ticking = false) {
       void audio.resume().then(() => {
         if (audio.state !== "running") { setEnabled(false); return; }
         setEnabled(true);
-        const tone = audio.createOscillator();
-        const gain = audio.createGain();
-        tone.type = "sawtooth";
-        tone.frequency.setValueAtTime(180, audio.currentTime);
-        tone.frequency.exponentialRampToValueAtTime(110, audio.currentTime + 0.4);
-        gain.gain.setValueAtTime(0, audio.currentTime);
-        gain.gain.linearRampToValueAtTime(0.65, audio.currentTime + 0.015);
-        gain.gain.setValueAtTime(0.65, audio.currentTime + 0.32);
-        gain.gain.linearRampToValueAtTime(0, audio.currentTime + 0.45);
-        tone.connect(gain).connect(audio.destination);
-        tone.onended = () => { tone.disconnect(); gain.disconnect(); };
-        tone.start();
-        tone.stop(audio.currentTime + 0.46);
+        const now = audio.currentTime;
+        // Two soft, ascending notes make the buzz recognizable without a harsh edge.
+        for (const [frequency, offset] of [[523.25, 0], [659.25, 0.1]]) {
+          const tone = audio.createOscillator();
+          const gain = audio.createGain();
+          tone.type = "sine";
+          tone.frequency.setValueAtTime(frequency, now + offset);
+          gain.gain.setValueAtTime(0, now + offset);
+          gain.gain.linearRampToValueAtTime(0.22, now + offset + 0.015);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.24);
+          tone.connect(gain).connect(audio.destination);
+          tone.onended = () => { tone.disconnect(); gain.disconnect(); };
+          tone.start(now + offset);
+          tone.stop(now + offset + 0.25);
+        }
       }).catch(() => setEnabled(false));
     } catch { setEnabled(false); }
   }, []);

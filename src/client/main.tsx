@@ -330,7 +330,9 @@ function App() {
           <span className="brand-mark" aria-hidden="true">
             🎲
           </span>
-          HouseParty
+          {room?.snapshot.gameId === "fastest-finger-first"
+            ? "Fastest Finger First."
+            : "HouseParty"}
         </a>
         <div className="header-right">
           <ConnectionStatus live={online && ready} inRoom={!!room} />

@@ -6,7 +6,6 @@ import {
   Pause,
   Play,
   RotateCcw,
-  Trophy,
   X,
 } from "lucide-react";
 import { Badge, Button, Input, Modal, Notice } from "../../components/ui";
@@ -351,8 +350,12 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
     if (game.phase === "ended") return <Results game={game} nameOf={nameOf} />;
     return (
       <section className="fff-stage" aria-label="Game screen">
-        <p className="eyebrow">{game.packTitle || "GET READY TO BUZZ"}</p>
-        <h2 aria-live="polite">{phaseLabel(game)}</h2>
+        {display && (
+          <>
+            <p className="eyebrow">{game.packTitle || "GET READY TO BUZZ"}</p>
+            <h2 aria-live="polite">{phaseLabel(game)}</h2>
+          </>
+        )}
         {display && game.answering && !game.paused && (
           <div className="fff-answering">
             <span className="player-avatar">
@@ -383,6 +386,26 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
         )}
         {!host && !display && (
           <>
+            <p className="fff-buzzer-status" role="status">
+              {!connected
+                ? "Reconnecting…"
+                : game.paused
+                  ? "Game paused. Wait for the host."
+                  : ownLock
+                    ? `${ownLock} · Locked out for this question.`
+                    : ownTurn
+                      ? "Answer aloud. The host will judge."
+                      : snapshot.players[you]?.waiting ||
+                          (game.questionId && !game.roster.includes(you))
+                        ? "You'll join the next question."
+                        : game.phase === "ready"
+                          ? "Don't tap yet! An early buzz locks you out."
+                          : game.phase === "open"
+                            ? "Go! First to buzz gets to answer."
+                            : game.answering
+                              ? `${nameOf(game.answering)} won the buzz. Wait for the host.`
+                              : "Wait for the host."}
+            </p>
             <Button
               className={`fff-buzzer ${ownTurn && !game.paused ? "fff-buzzer-won" : buzzerDisabled ? "fff-buzzer-off" : ""}`}
               disabled={buzzerDisabled}
@@ -407,26 +430,6 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
                 <span>BUZZ</span>
               )}
             </Button>
-            <p className="fff-buzzer-status" role="status">
-              {!connected
-                ? "Reconnecting…"
-                : game.paused
-                  ? "Game paused. Wait for the host."
-                  : ownLock
-                    ? `${ownLock} · Locked out for this question.`
-                    : ownTurn
-                      ? "Answer aloud. The host will judge."
-                      : snapshot.players[you]?.waiting ||
-                          (game.questionId && !game.roster.includes(you))
-                        ? "You'll join the next question."
-                        : game.phase === "ready"
-                          ? "Don't tap yet! An early buzz locks you out."
-                          : game.phase === "open"
-                            ? "Go! First to buzz gets to answer."
-                            : game.answering
-                              ? `${nameOf(game.answering)} won the buzz. Wait for the host.`
-                              : "Wait for the host."}
-            </p>
             <div className="fff-own-score">
               <strong>{game.stats[you]?.score ?? 0}</strong>
               <span>YOUR POINTS</span>
@@ -451,20 +454,11 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
       {display && !buzzer.enabled && (
         <Button onClick={buzzer.enable}>Enable buzzer sound on TV</Button>
       )}
-      <div className="room-title">
-        <div>
-          <p className="eyebrow">
-            {host ? "YOU RUN THE SHOW" : "FAST THINKING. FAST FINGERS."}
-          </p>
-          <h1>
-            Fastest <span className="game-title-word">Finger First.</span>
-          </h1>
+      {host && (
+        <div className="room-title">
+          <p className="eyebrow">YOU RUN THE SHOW</p>
         </div>
-        <div className="room-code">
-          <span>JOIN AT {location.host}</span>
-          <strong>{session.code}</strong>
-        </div>
-      </div>
+      )}
       <div className="room-layout">
         <section className="play-panel">
           <div className="round-bar">
@@ -518,7 +512,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
         <aside className="score-panel">
           <div className="section-heading">
             <h2>
-              {game.phase === "ended" ? "The final scores" : "The good company"}
+              {game.phase === "ended" ? "The final scores" : "Score Card"}
             </h2>
             <span>{participants.length} PLAYERS</span>
           </div>
@@ -564,7 +558,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
               );
             })}
           </div>
-          {!display && (
+          {host && !display && (
             <a
               className="tv-link"
               href={joinUrl + "&screen=tv"}
@@ -574,16 +568,11 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
               ▣ Open shared screen ↗
             </a>
           )}
-          <div className="room-tip">
-            <Trophy size={20} />
-            <p>
-              Wait for open buzzers.
-              <br />
-              An early tap means sitting this question out.
-            </p>
-          </div>
         </aside>
       </div>
+      <footer className="fff-room-code">
+        <span>Room code</span> <strong>{session.code}</strong>
+      </footer>
       {host && (
         <>
           <ScoreEditor

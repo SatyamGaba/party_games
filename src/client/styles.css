@@ -1738,6 +1738,54 @@
 }
 
 @layer components {
+  .fff-page {
+    padding-bottom: 0;
+  }
+  .fff-room-code {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 6px;
+    border: 0;
+    margin-top: 12px;
+    padding: 0;
+    text-align: right;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+  .fff-room-code strong {
+    color: var(--foreground);
+    letter-spacing: 0.08em;
+  }
+  .fff-player .play-panel {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+  }
+  .fff-player .round-bar {
+    display: none;
+  }
+  .fff-player .fff-stage {
+    gap: 28px;
+    padding: 32px 16px 40px;
+  }
+  .fff-player .fff-buzzer-status {
+    min-height: 0;
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--foreground);
+  }
+  .fff-player .fff-buzzer {
+    width: min(260px, 70vw);
+    height: min(260px, 70vw);
+    font-size: 2.25rem;
+  }
+  .fff-player .fff-own-score {
+    margin-top: 8px;
+  }
   .fff-display .room-title {
     display: none;
   }
@@ -1763,15 +1811,8 @@
   }
   .fff-player .fff-stage {
     min-height: 0;
-    gap: 16px;
-    padding: 20px 16px;
-  }
-  .fff-player .fff-buzzer {
-    width: 190px;
-    height: 190px;
-  }
-  .fff-player .fff-buzzer-status {
-    min-height: 2.5em;
+    gap: 28px;
+    padding: 28px 16px 36px;
   }
 }
 
