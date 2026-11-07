@@ -447,20 +447,10 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
     if (id === this.moderator) client.view?.add(this.state.game.host);
     this.syncStats();
   }
-  protected participantDropped(id: string) {
-    if (
-      id === this.moderator &&
-      !["lobby", "ended"].includes(this.state.game.phase)
-    ) {
-      this.pause();
-      this.state.game.revision++;
-    }
-  }
   protected participantLeft(id: string) {
     if (id === this.moderator) {
       // Base lifecycle normally transfers the host; this game must never expose answers to a player.
       this.state.hostId = this.moderator;
-      this.participantDropped(id);
     }
   }
 }

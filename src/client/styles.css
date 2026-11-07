@@ -1963,3 +1963,44 @@
     gap: 2vw;
   }
 }
+
+@layer components {
+  .fff-host-controls .fff-next-question {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .fff-host-controls .fff-next-question .button {
+    min-width: 0;
+    padding-inline: 8px;
+  }
+}
+
+@layer components {
+  .fff-lobby { display: flex; justify-content: center; padding: 36px 0; }
+  .fff-lobby-card { width: min(100%, 520px); display: grid; gap: 16px; padding: clamp(24px, 5vw, 36px); background: var(--surface); border: 1px solid var(--line); border-radius: 24px; box-shadow: 0 12px 35px #00000014; }
+  .fff-lobby-code { font-size: 2.5rem; letter-spacing: 0.12em; line-height: 1; }
+  .fff-lobby-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 12px; }
+  .fff-lobby-heading h1 { font-size: 1.3rem; font-weight: 700; }
+  .fff-lobby-heading span { color: var(--muted); font-size: 0.875rem; }
+  .fff-lobby-players { display: grid; max-height: 240px; overflow-y: auto; }
+  .fff-lobby-player { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+  .fff-lobby-card > .button.primary { width: 100%; }
+}
+
+@layer components {
+  .fff-host-controls > .fff-verdict {
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    background: var(--surface);
+  }
+}
+
+@layer components {
+  .fff-private-card.fff-question-played {
+    background: var(--surface-secondary);
+    color: var(--muted);
+    filter: grayscale(1);
+  }
+}

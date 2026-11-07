@@ -3,12 +3,10 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  Pause,
-  Play,
   RotateCcw,
   X,
 } from "lucide-react";
-import { Badge, Button, Input, Modal, Notice } from "../../components/ui";
+import { Button, Card, Input, Modal, Notice } from "../../components/ui";
 import { QrCode } from "../../components/qr";
 import type { GameScreenProps } from "../../platform/contracts";
 import { Choice, MoreOptions, ScoreEditor, useGameAction } from "./controls";
@@ -98,8 +96,11 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
   const selectedPack = packs.some((p) => p.id === packChoice)
     ? packChoice
     : (packs[0]?.id ?? "");
-  const unplayed = questions.filter((q) => !q.played);
-  const next = unplayed.find((q) => q.id === questionChoice) ?? unplayed[0];
+  useEffect(() => { if (game.phase === "answering") setQuestionChoice(game.questionId); }, [game.phase, game.questionId]);
+  const selectedQuestion = questions.find((q) => q.id === questionChoice) ??
+    questions.find((q) => q.id === game.questionId) ?? questions[0];
+  const selectedIndex = questions.findIndex((q) => q.id === selectedQuestion?.id);
+  useEffect(() => { setQuestionChoice(game.questionId); }, [game.game, game.questionId]);
   const players = rankedPlayers(game.stats);
   const participants = Object.values(snapshot.players).filter(
     (p) => p.role === "player" && p.id !== snapshot.hostId && !p.departed,
@@ -165,30 +166,6 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
   function hostControls() {
     return (
       <section className="fff-host-controls" aria-label="Host controls">
-        <div className="fff-actions fff-actions-between">
-          <Badge>PRIVATE HOST SCREEN</Badge>
-          <div className="fff-actions">
-            {active && (
-              <Button
-                variant="secondary"
-                disabled={disabled}
-                onClick={() => act(game.paused ? "resume" : "pause")}
-              >
-                {game.paused ? <Play size={16} /> : <Pause size={16} />}
-                {game.paused ? "Resume" : "Pause"}
-              </Button>
-            )}
-            <MoreOptions
-              disabled={disabled}
-              canEdit={active}
-              onEdit={() => {
-                clearError();
-                setDialog("score");
-              }}
-              onEnd={() => setDialog("end")}
-            />
-          </div>
-        </div>
         {game.mediaUrl && (
           <div className="fff-form">
             <Button
@@ -215,134 +192,56 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
           packControls()
         ) : (
           <>
-            {game.questionId && (
-              <div className="fff-private-card">
-                <p className="eyebrow">CURRENT QUESTION · READ ALOUD</p>
-                <h2>{game.host?.prompt}</h2>
+            {selectedQuestion && (
+              <div className={`fff-private-card ${selectedQuestion.played && (selectedQuestion.id !== game.questionId || game.phase === "revealed") ? "fff-question-played" : ""}`}>
+                <p className="eyebrow">QUESTION {selectedIndex + 1} OF {questions.length} · {selectedQuestion.played && (selectedQuestion.id !== game.questionId || game.phase === "revealed") ? "ALREADY PLAYED" : selectedQuestion.id === game.questionId ? "CURRENT QUESTION" : "READY TO CAST"}</p>
+                <h2>{selectedQuestion.prompt}</h2>
                 <div className="fff-answer">
                   <span className="eyebrow">
                     PREPARED ANSWER · ONLY YOU CAN SEE THIS
                   </span>
-                  <strong>{game.host?.answer}</strong>
+                  <strong>{selectedQuestion.answer}</strong>
                 </div>
+                {!selectedQuestion.played && (
+                  <Button variant="primary" disabled={disabled || game.paused || game.phase === "answering"} onClick={() => act("startQuestion", { question: selectedQuestion.id })}>
+                    Cast question <ArrowRight size={17} />
+                  </Button>
+                )}
+                {selectedQuestion.id === game.questionId && (
+                  <>
+                    {game.phase === "judged" && <p><strong>{nameOf(game.answering)}</strong> · {game.verdict}</p>}
+                    {["ready", "open", "judged"].includes(game.phase) && (
+                      <div className="fff-actions">
+                        {game.phase === "judged" && game.verdict === "Wrong" && <Button variant="primary" disabled={disabled || game.paused} onClick={() => act("reopen")}><RotateCcw size={17} /> Reopen question</Button>}
+                        <Button variant={game.phase === "judged" && game.verdict === "Correct" ? "primary" : "secondary"} disabled={disabled || game.paused} onClick={() => act("reveal")}>Reveal answer</Button>
+                        {game.phase === "judged" && <Button variant="ghost" disabled={disabled || game.paused} onClick={() => act("undo")}>Undo last verdict</Button>}
+                      </div>
+                    )}
+                    {game.phase === "revealed" && <p>Answer revealed.</p>}
+                  </>
+                )}
               </div>
             )}
-            <div className="fff-actions">
-              <Button
-                variant="secondary"
-                disabled={
-                  disabled ||
-                  game.paused ||
-                  game.phase !== "judged" ||
-                  game.verdict !== "Wrong"
-                }
-                onClick={() => act("reopen")}
-              >
-                <RotateCcw size={17} /> Reopen question
+            {selectedQuestion?.id === game.questionId && (
+              <>
+                    {game.phase === "answering" && (
+                      <div className="fff-verdict">
+                        <p><strong>{nameOf(game.answering)}</strong> is answering aloud.</p>
+                        <div className="fff-actions">
+                          <Button className="fff-correct" disabled={disabled || game.paused} onClick={() => act("judge", { correct: true })}><Check size={18} /> Correct · +{game.reward}</Button>
+                          <Button className="fff-wrong" disabled={disabled || game.paused} onClick={() => act("judge", { correct: false })}><X size={18} /> Wrong · −{game.penalty}</Button>
+                        </div>
+                      </div>
+                    )}
+              </>
+            )}
+            <div className="fff-next-question fff-actions">
+              <Button variant="secondary" disabled={disabled || game.phase === "answering" || selectedIndex <= 0} onClick={() => setQuestionChoice(questions[selectedIndex - 1].id)}>
+                <ArrowLeft size={17} /> Previous question
               </Button>
-              <Button
-                variant="secondary"
-                disabled={
-                  disabled ||
-                  game.paused ||
-                  !["ready", "open", "judged"].includes(game.phase)
-                }
-                onClick={() => act("reveal")}
-              >
-                Reveal answer
+              <Button variant="secondary" disabled={disabled || game.phase === "answering" || selectedIndex < 0 || selectedIndex >= questions.length - 1} onClick={() => setQuestionChoice(questions[selectedIndex + 1].id)}>
+                Next question <ArrowRight size={17} />
               </Button>
-            </div>
-            {game.answering && (
-              <div className="fff-verdict">
-                <p>
-                  <strong>{nameOf(game.answering)}</strong>
-                  {game.phase === "answering"
-                    ? " is answering aloud."
-                    : ` · ${game.verdict}`}
-                </p>
-                <div className="fff-actions">
-                  <Button
-                    className="fff-correct"
-                    disabled={
-                      disabled || game.paused || game.phase !== "answering"
-                    }
-                    onClick={() => act("judge", { correct: true })}
-                  >
-                    <Check size={18} /> Correct · +{game.reward}
-                  </Button>
-                  <Button
-                    className="fff-wrong"
-                    disabled={
-                      disabled || game.paused || game.phase !== "answering"
-                    }
-                    onClick={() => act("judge", { correct: false })}
-                  >
-                    <X size={18} /> Wrong · −{game.penalty}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    disabled={
-                      disabled || game.paused || game.phase !== "judged"
-                    }
-                    onClick={() => act("undo")}
-                  >
-                    Undo last verdict
-                  </Button>
-                </div>
-              </div>
-            )}
-            {game.questionId && (
-              <div className="fff-actions">
-                <span>
-                  Correct +{game.reward} · Wrong −{game.penalty}
-                </span>
-                <Button
-                  size="small"
-                  variant="secondary"
-                  disabled={
-                    disabled || game.paused || game.phase === "revealed"
-                  }
-                  onClick={() => {
-                    clearError();
-                    setDialog("scoring");
-                  }}
-                >
-                  Change question points
-                </Button>
-              </div>
-            )}
-            <div className="fff-next-question">
-              <Choice
-                label="Choose the next question"
-                value={next?.id ?? ""}
-                onChange={setQuestionChoice}
-                options={unplayed.map((q) => ({
-                  value: q.id,
-                  label: `${questions.indexOf(q) + 1}. ${q.prompt}`,
-                }))}
-                disabled={disabled || game.paused}
-              />
-              {next ? (
-                <>
-                  <p className="fff-caption">
-                    {next.type.toUpperCase()} · Answer: {next.answer}
-                  </p>
-                  <Button
-                    variant="primary"
-                    disabled={
-                      disabled || game.paused || game.phase === "answering"
-                    }
-                    onClick={() => act("startQuestion", { question: next.id })}
-                  >
-                    Start question <ArrowRight size={17} />
-                  </Button>
-                </>
-              ) : (
-                <p>
-                  All questions have been played. Use More options to end the
-                  game.
-                </p>
-              )}
             </div>
           </>
         )}
@@ -455,6 +354,34 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
       </section>
     );
   }
+  if (host && game.phase === "lobby") {
+    const joined = participants.filter((person) => person.connected);
+    return (
+      <main className="fff-lobby" aria-label="Game lobby">
+        <Card className="fff-lobby-card">
+          <p className="eyebrow">ROOM CODE</p>
+          <strong className="fff-lobby-code">{session.code}</strong>
+          <div className="fff-lobby-heading"><h1>Players joined</h1><span>{joined.length} joined</span></div>
+          <div className="fff-lobby-players" aria-live="polite">
+            {joined.length ? joined.map((person) => (
+              <div className="fff-lobby-player" key={person.id}>
+                <span className="player-avatar">{person.name.slice(0, 1).toUpperCase()}</span>
+                <strong>{person.name}</strong>
+              </div>
+            )) : <p className="fff-caption">Waiting for players to join…</p>}
+          </div>
+          {game.host?.error && <Notice>{game.host.error}</Notice>}
+          <Choice label="Question pack" value={selectedPack} onChange={setPackChoice}
+            options={packs.map((p) => ({ value: p.id, label: `${p.title} · ${p.count} questions` }))} disabled={disabled} />
+          {!packs.length && <p className="fff-caption">Add a question pack, then refresh.</p>}
+          <Button variant="ghost" disabled={disabled} onClick={() => act("refreshPacks")}>Refresh packs</Button>
+          <Button variant="primary" disabled={disabled || !selectedPack || joined.length === 0} onClick={() => act("newGame", { pack: selectedPack })}>
+            {busy ? "Starting…" : "Start the game"} <ArrowRight size={18} />
+          </Button>
+        </Card>
+      </main>
+    );
+  }
   return (
     <main
       className={`room-page fff-page ${display ? "fff-display" : !host ? "fff-player" : ""}`}
@@ -467,22 +394,22 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
           <p className="eyebrow">YOU RUN THE SHOW</p>
         </div>
       )}
-      <div className={`room-layout ${display && (showingScoreIntro || !active) ? "fff-tv-full" : display ? "fff-tv-sidebar-layout" : ""}`}>
-        {!showingScoreIntro && <section className={`play-panel ${display && !game.paused && game.phase === "open" ? "fff-tv-buzz-open" : display && !game.paused && game.phase === "answering" ? "fff-tv-buzz-won" : display && !game.paused && game.phase === "judged" ? (game.verdict === "Correct" ? "fff-tv-correct" : "fff-tv-wrong") : ""}`}>
+      <div className={`room-layout ${display && !active ? "fff-tv-full" : display ? "fff-tv-sidebar-layout" : ""}`}>
+        <section className={`play-panel ${display && !game.paused && game.phase === "open" ? "fff-tv-buzz-open" : display && !game.paused && game.phase === "answering" ? "fff-tv-buzz-won" : display && !game.paused && game.phase === "judged" ? (game.verdict === "Correct" ? "fff-tv-correct" : "fff-tv-wrong") : ""}`}>
           <div className="round-bar">
             <span>
               {game.questionNumber
                 ? `QUESTION ${game.questionNumber} / ${game.totalQuestions}`
                 : "EVERYONE IN?"}
             </span>
-            <span>
-              {active
-                ? `CORRECT +${game.reward} · WRONG −${game.penalty}`
-                : "FIRST TO BUZZ GETS THE FLOOR"}
-            </span>
+            {host ? (
+              <MoreOptions disabled={disabled} canEdit={active} paused={game.paused} onPause={() => act(game.paused ? "resume" : "pause")} canChangePoints={Boolean(game.questionId) && !game.paused && game.phase !== "revealed"} onChangePoints={() => { clearError(); setDialog("scoring"); }} onEdit={() => { clearError(); setDialog("score"); }} onEnd={() => setDialog("end")} />
+            ) : (
+              <span>{active ? `CORRECT +${game.reward} · WRONG −${game.penalty}` : "FIRST TO BUZZ GETS THE FLOOR"}</span>
+            )}
           </div>
           {host && game.phase !== "ended" && hostControls()}
-          {(!host || game.phase === "ended") && publicStage()}
+          {showingScoreIntro ? <div className="fff-stage fff-countdown" role="status" aria-live="polite"><span>Question in</span><strong>{game.countdown}</strong></div> : (!host || game.phase === "ended") && publicStage()}
           {host && active && (
             <p className="fff-host-status" role="status">
               {phaseLabel(game)}
@@ -516,8 +443,8 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
             </details>
           )}
           {error && <Notice onDismiss={clearError}>{error}</Notice>}
-        </section>}
-        {display && active && !showingScoreIntro && (
+        </section>
+        {display && active && (
           <aside className="fff-tv-sidebar" aria-label="Rules and top scores">
             <section className="fff-tv-rules">
               <h2>Scoring</h2>
@@ -537,7 +464,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
             </section>
           </aside>
         )}
-        {(!display || showingScoreIntro) && <aside className={`score-panel ${display ? "fff-tv-score-reveal" : ""} ${showingScoreIntro ? "fff-tv-score-intro" : ""}`}>
+        {!display && <aside className={`score-panel ${display ? "fff-tv-score-reveal" : ""} ${showingScoreIntro ? "fff-tv-score-intro" : ""}`}>
           <div className="section-heading">
             <h2>
               {game.phase === "ended" ? "The final scores" : "Score Card"}

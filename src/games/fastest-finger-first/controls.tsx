@@ -99,22 +99,36 @@ export function useGameAction(send: GameScreenProps["send"], revision: number) {
 export function MoreOptions({
   disabled,
   canEdit,
+  canChangePoints,
+  paused,
+  onPause,
+  onChangePoints,
   onEdit,
   onEnd,
 }: {
   disabled: boolean;
   canEdit: boolean;
+  canChangePoints: boolean;
+  paused: boolean;
+  onPause(): void;
+  onChangePoints(): void;
   onEdit(): void;
   onEnd(): void;
 }) {
   return (
     <Menu.Root>
-      <Menu.Trigger className="button quiet" disabled={disabled}>
-        <MoreHorizontal size={18} /> More options
+      <Menu.Trigger className="button quiet" disabled={disabled} aria-label="More options">
+        <MoreHorizontal size={18} />
       </Menu.Trigger>
       <Menu.Portal>
         <Menu.Positioner sideOffset={8}>
           <Menu.Popup className="theme-menu">
+            <Menu.Item className="theme-item" disabled={!canEdit} onClick={onPause}>
+              {paused ? "Resume game" : "Pause game"}
+            </Menu.Item>
+            <Menu.Item className="theme-item" disabled={!canChangePoints} onClick={onChangePoints}>
+              Change question points
+            </Menu.Item>
             <Menu.Item
               className="theme-item"
               disabled={!canEdit}

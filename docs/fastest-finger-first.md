@@ -53,7 +53,7 @@ More options lets the host edit any player's total score. The difference is reta
 
 New arrivals wait until the next question. Reconnecting players retain their scores and question lockouts.
 
-The host can manually pause and resume play. Pausing closes buzzers and stops media while preserving the question, selected answering player, lockouts, and scores. Host disconnection automatically pauses play; players do not acquire host controls or private answers. The host controls continuation after reconnecting.
+The host can manually pause and resume play. Pausing closes buzzers and stops media while preserving the question, selected answering player, lockouts, and scores. Host disconnection does not pause play; players do not acquire host controls or private answers. The host can resume control after reconnecting.
 
 ## Ending and results
 

@@ -243,7 +243,7 @@ describe("Fastest Finger First with real phones and TV", () => {
     expect(host.state.game.stats.get(me(other))?.score).toBe(0);
     expect(host.state.game.stats.get(winnerId)?.adjustment).toBe(0);
   });
-  it("pauses manually and on host loss, preserves answering players, and never transfers private controls after the host hold expires", async () => {
+  it("pauses only manually, preserves answering players, and never transfers private controls after the host hold expires", async () => {
     const { host, alice, tv } = await prepare();
     await command(host, "openBuzzers");
     await waitFor(() => alice.state.game.phase === "open");
@@ -262,16 +262,16 @@ describe("Fastest Finger First with real phones and TV", () => {
       token = host.reconnectionToken;
     host.reconnection.enabled = false;
     host.connection.close(4001);
-    await waitFor(() => alice.state.game.paused);
+    await waitFor(() => alice.state.players.get(hostId)?.connected === false);
+    expect(alice.state.game.paused).toBe(false);
     expect((await command(alice, "resume")).ok).toBe(false);
     const restored = await new Client(endpoint).reconnect<FastestRoomState>(
       token,
     );
     clients.push(restored);
     await waitFor(() => restored.state?.game?.host?.answer === "PRIVATE ONE");
-    expect(restored.state.game.paused).toBe(true);
-    await command(restored, "resume");
-    expect(restored.state.game.phase).toBe("ready");
+    expect(restored.state.game.paused).toBe(false);
+    expect(restored.state.game.phase).toBe("open");
     restored.reconnection.enabled = false;
     restored.connection.close(4001);
     await waitFor(() => alice.state.players.get(hostId)?.departed === true);
