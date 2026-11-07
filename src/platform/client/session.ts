@@ -73,7 +73,7 @@ function attach(room: Room, role: Role, generation: number) {
     const snapshot = state.toJSON() as RoomSnapshot;
     if (!snapshot.gameId || !snapshot.players) return;
     useSessionStore.setState({
-      room: { code: room.roomId, you: room.sessionId, role, snapshot },
+      room: { code: room.roomId.slice(room.roomId.lastIndexOf("-") + 1), you: room.sessionId, role, snapshot },
       online: true,
       ready: true,
       error: "",
@@ -110,7 +110,10 @@ function attach(room: Room, role: Role, generation: number) {
   update();
 }
 export async function enterRoom(options: {
+  /** Create a new room of this game. */
   gameId?: string;
+  /** Join an existing room of this game by its code. */
+  joinGameId?: string;
   code?: string;
   role: Role;
   name: string;
@@ -118,12 +121,17 @@ export async function enterRoom(options: {
   if (entering || active)
     throw new Error("A room is already open or connecting.");
   const parsed = joinSchema.parse(options);
+  if (!options.gameId && !options.joinGameId)
+    throw new Error("Choose a game first.");
   entering = true;
   const generation = ++epoch;
   try {
     const room = options.gameId
       ? await (await sdk()).create(options.gameId, parsed)
-      : await (await sdk()).joinById(codeSchema.parse(options.code), parsed);
+      : await (await sdk()).joinById(
+          options.joinGameId + "-" + codeSchema.parse(options.code),
+          parsed,
+        );
     if (generation !== epoch) {
       await room.leave();
       return;

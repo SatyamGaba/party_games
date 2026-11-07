@@ -1162,3 +1162,20 @@
     transition: none !important;
   }
 }
+.choose-actions {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+.tv-qr {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.qr-code {
+  background: #fff;
+  border-radius: 16px;
+  padding: 8px;
+}

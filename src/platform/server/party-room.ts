@@ -8,8 +8,11 @@ import { LIMITS } from "../../lib/config";
 import { UserError, publicError } from "../../lib/errors";
 import { log } from "../../lib/log";
 import type { Reply } from "../contracts";
-const codes = new Set<string>();
-function allocateCode() {
+/** Room codes are unique within a game, not across the whole app. */
+const codesByGame = new Map<string, Set<string>>();
+function allocateCode(gameId: string) {
+  let codes = codesByGame.get(gameId);
+  if (!codes) codesByGame.set(gameId, (codes = new Set()));
   if (codes.size >= 100)
     throw new ServerError(503, "Too many active rooms. Try again shortly.");
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -23,6 +26,9 @@ function allocateCode() {
   codes.add(code);
   return code;
 }
+/** Colyseus room ids are global, so the per-game code is namespaced by game. */
+export const roomIdFor = (gameId: string, code: string) => gameId + "-" + code;
+export const codeOf = (roomId: string) => roomId.slice(roomId.lastIndexOf("-") + 1);
 /** App lifecycle helpers only. No game rules, scoring, or game-specific messages. */
 export abstract class PartyRoom<S extends PartyState> extends Room<{
   state: S;
@@ -32,14 +38,13 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
   patchRate = 50;
   /** Games without a shared-screen view set this to false. */
   protected allowsDisplay = true;
-  private firstJoin = true;
   protected abstract initialState(): S;
   protected abstract configure(): void;
   protected participantLeft(_id: string): void {}
   protected participantJoined(_client: Client): void {}
   onCreate() {
-    this.roomId = allocateCode();
     this.setState(this.initialState());
+    this.roomId = roomIdFor(this.state.gameId, allocateCode(this.state.gameId));
     this.setPrivate(true);
     this.configure();
     log("room_created", { room: this.roomId, game: this.state.gameId });
@@ -71,9 +76,8 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
     if (role === "player" && !this.state.hostId)
       this.state.hostId = client.sessionId;
     // A screen that creates the room hosts it alongside the first phone.
-    if (role === "display" && this.firstJoin)
+    if (role === "display" && !this.state.screenId)
       this.state.screenId = client.sessionId;
-    this.firstJoin = false;
     this.participantJoined(client);
     log("participant_joined", {
       room: this.roomId,
@@ -102,7 +106,7 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
     this.participantLeft(client.sessionId);
   }
   onDispose() {
-    codes.delete(this.roomId);
+    codesByGame.get(this.state.gameId)?.delete(codeOf(this.roomId));
     log("room_disposed", { room: this.roomId });
   }
   protected connectedPlayers() {
