@@ -25,7 +25,6 @@ import {
 } from "../components/ui";
 import { useRoomConnection, enterRoom } from "../platform/client/session";
 import { clientGames } from "../games/registry.client";
-import type { GameManifest } from "../platform/contracts";
 import { clientError } from "../lib/errors";
 import "@fontsource-variable/inter";
 import "./styles.css";
@@ -45,14 +44,18 @@ function App() {
   const { room, online, ready, error, setError, send, leave } =
     useRoomConnection();
   const params = new URLSearchParams(location.search);
-  const [modal, setModal] = useState<"create" | "join" | "display" | null>(
-    params.has("room")
+  const [modal, setModal] = useState<
+    "choose" | "create" | "join" | "display" | null
+  >(
+    params.has("room") && params.get("game") && clientGames[params.get("game")!]
       ? params.get("screen") === "tv"
         ? "display"
         : "join"
       : null,
   );
-  const [gameId, setGameId] = useState("");
+  const [gameId, setGameId] = useState(
+    clientGames[params.get("game") ?? ""] ? params.get("game")! : "",
+  );
   const [name, setName] = useState("");
   const [code, setCode] = useState(params.get("room") ?? "");
   const [busy, setBusy] = useState(false);
@@ -83,6 +86,7 @@ function App() {
     try {
       await enterRoom({
         gameId: modal === "create" ? gameId : undefined,
+        joinGameId: modal === "create" ? undefined : gameId,
         code,
         name,
         role: modal === "display" ? "display" : "player",
@@ -93,18 +97,119 @@ function App() {
       setBusy(false);
     }
   }
-  async function hostFromTv(manifest: GameManifest) {
-    if (!manifest.tv || busy) return;
+  async function hostFromTv() {
+    if (busy) return;
     setBusy(true);
     setError("");
     try {
-      await enterRoom({ gameId: manifest.id, role: "display", name: "" });
+      await enterRoom({ gameId, role: "display", name: "" });
     } catch (error) {
       setError(clientError(error));
     } finally {
       setBusy(false);
     }
   }
+  const chosen = clientGames[gameId]?.manifest;
+  const dialogs = (
+    <>
+      <Modal
+        open={modal === "choose" && !room && !!chosen}
+        onClose={() => setModal(null)}
+        title={chosen?.name ?? ""}
+        description="Start a new game, or jump into one that's already running."
+      >
+        <div className="choose-actions">
+          <Button
+            variant="primary"
+            className="full"
+            disabled={busy || !ready}
+            onClick={() => (launcher ? void hostFromTv() : setModal("create"))}
+          >
+            Host a game <ArrowRight size={18} />
+          </Button>
+          <Button
+            variant="secondary"
+            className="full"
+            disabled={!ready}
+            onClick={() => {
+              setError("");
+              setModal(launcher ? "display" : "join");
+            }}
+          >
+            Join existing game <ArrowUpRight size={18} />
+          </Button>
+          {error && <Notice>{error}</Notice>}
+        </div>
+      </Modal>
+      <Modal
+        open={modal !== null && modal !== "choose" && !room}
+        onClose={() => setModal(null)}
+        title={
+          modal === "create"
+            ? "Make room for a good time."
+            : modal === "display"
+              ? "Go big on game night."
+              : "You're invited."
+        }
+        description={
+          modal === "create"
+            ? "You'll be the host and a player. Share your room code to get everyone in."
+            : modal === "display"
+              ? "This screen follows the action. Use your phone to play."
+              : "Enter your host's room code and choose a name."
+        }
+      >
+        <form onSubmit={enter}>
+          {modal !== "create" && (
+            <label>
+              Room code
+              <Input
+                value={code}
+                onValueChange={(v) =>
+                  setCode(v.toUpperCase().replace(/[^A-Z0-9]/g, ""))
+                }
+                className="code-input"
+                maxLength={4}
+                minLength={4}
+                required
+                autoComplete="off"
+                autoFocus
+              />
+            </label>
+          )}
+          {modal !== "display" && (
+            <label>
+              Your name
+              <Input
+                value={name}
+                onValueChange={setName}
+                maxLength={24}
+                required
+                autoComplete="nickname"
+                autoFocus={modal === "create"}
+              />
+            </label>
+          )}
+          {error && <Notice>{error}</Notice>}
+          <Button
+            type="submit"
+            variant="primary"
+            className="full"
+            disabled={busy || !ready}
+          >
+            {busy
+              ? "Connecting…"
+              : modal === "create"
+                ? "Create room"
+                : modal === "display"
+                  ? "Connect screen"
+                  : "Join the party"}
+            <ArrowRight size={18} />
+          </Button>
+        </form>
+      </Modal>
+    </>
+  );
   if (launcher)
     return (
       <div className="shell">
@@ -135,7 +240,11 @@ function App() {
                 key={manifest.id}
                 className="tv-tile"
                 disabled={!manifest.tv || busy || !ready}
-                onClick={() => void hostFromTv(manifest)}
+                onClick={() => {
+                  setGameId(manifest.id);
+                  setError("");
+                  setModal("choose");
+                }}
               >
                 <Icon strokeWidth={1.3} />
                 <strong>{manifest.name}</strong>
@@ -151,6 +260,7 @@ function App() {
             ))}
           </div>
         </main>
+        {dialogs}
       </div>
     );
   return (
@@ -254,9 +364,6 @@ function App() {
             Pick a game, grab your phones, and make a night of it.
           </p>
           <div className="home-actions">
-            <Button variant="primary" onClick={() => setModal("join")}>
-              Join a room <ArrowUpRight size={19} />
-            </Button>
             <Button
               variant="secondary"
               onClick={() => location.assign("/tv")}
@@ -299,10 +406,11 @@ function App() {
                       disabled={!ready}
                       onClick={() => {
                         setGameId(manifest.id);
-                        setModal("create");
+                        setError("");
+                        setModal("choose");
                       }}
                     >
-                      Start a room <ArrowRight size={19} />
+                      Play <ArrowRight size={19} />
                     </Button>
                   </div>
                 </Card>
@@ -318,7 +426,7 @@ function App() {
                 </h3>
                 <ol>
                   {[
-                    ["Start something good.", "Pick a game and create a room."],
+                    ["Start something good.", "Pick a game, then host or join a room."],
                     [
                       "Get everyone together.",
                       "Share the room code. Phones become controllers.",
@@ -350,73 +458,7 @@ function App() {
           </footer>
         </main>
       )}
-      <Modal
-        open={modal !== null && !room}
-        onClose={() => setModal(null)}
-        title={
-          modal === "create"
-            ? "Make room for a good time."
-            : modal === "display"
-              ? "Go big on game night."
-              : "You're invited."
-        }
-        description={
-          modal === "create"
-            ? "You'll be the host and a player. Share your room code to get everyone in."
-            : modal === "display"
-              ? "This screen follows the action. Use your phone to play."
-              : "Enter your host's room code and choose a name."
-        }
-      >
-        <form onSubmit={enter}>
-          {modal !== "create" && (
-            <label>
-              Room code
-              <Input
-                value={code}
-                onValueChange={(v) =>
-                  setCode(v.toUpperCase().replace(/[^A-Z0-9]/g, ""))
-                }
-                className="code-input"
-                maxLength={4}
-                minLength={4}
-                required
-                autoComplete="off"
-                autoFocus
-              />
-            </label>
-          )}
-          {modal !== "display" && (
-            <label>
-              Your name
-              <Input
-                value={name}
-                onValueChange={setName}
-                maxLength={24}
-                required
-                autoComplete="nickname"
-                autoFocus={modal === "create"}
-              />
-            </label>
-          )}
-          {error && <Notice>{error}</Notice>}
-          <Button
-            type="submit"
-            variant="primary"
-            className="full"
-            disabled={busy || !ready}
-          >
-            {busy
-              ? "Connecting…"
-              : modal === "create"
-                ? "Create room"
-                : modal === "display"
-                  ? "Connect screen"
-                  : "Join the party"}
-            <ArrowRight size={18} />
-          </Button>
-        </form>
-      </Modal>
+      {dialogs}
     </div>
   );
 }

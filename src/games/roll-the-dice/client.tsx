@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button } from "../../components/ui";
+import { QrCode } from "../../components/qr";
 import { answerSubmission } from "../../platform/client/session";
 import type { GameScreenProps } from "../../platform/contracts";
 import type { DiceView } from "./shared";
@@ -71,6 +72,8 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
   const [copied, setCopied] = useState(false);
   const host = room.you === room.hostId || room.you === snapshot.screenId;
   const display = room.role === "display";
+  const joinUrl =
+    location.origin + "/?game=" + snapshot.gameId + "&room=" + room.code;
   const participating =
     game.roster.includes(room.you) && !game.skipped.includes(room.you);
   const locked = game.ownAnswer !== null;
@@ -101,7 +104,7 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
   async function copy() {
     try {
       await navigator.clipboard.writeText(
-        location.origin + "/?room=" + room.code,
+        joinUrl,
       );
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -228,6 +231,15 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
               You're on the guest list for the next round. Enjoy this roll!
             </div>
           )}
+          {display && game.phase === "lobby" && (
+            <div className="tv-qr">
+              <QrCode value={joinUrl} size={280} />
+              <p>
+                Scan to join · or go to {location.host} and enter{" "}
+                <strong>{room.code}</strong>
+              </p>
+            </div>
+          )}
           {(game.phase === "lobby" || game.phase === "result") && (
             <div className="round-actions">
               {host ? (
@@ -321,7 +333,7 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
           {!display && (
             <a
               className="tv-link"
-              href={"/?room=" + room.code + "&screen=tv"}
+              href={joinUrl + "&screen=tv"}
               target="_blank"
               rel="noreferrer"
             >

@@ -77,10 +77,9 @@ describe("real Colyseus clients", () => {
     const host = await player();
     const guest = await player(host.roomId);
     const tv = await player(host.roomId, "display");
-    expect(host.roomId).toMatch(/^[A-HJ-NP-Z2-9]{4}$/);
+    expect(host.roomId).toMatch(/^roll-the-dice-[A-HJ-NP-Z2-9]{4}$/);
     expect((await request(guest, "start")).ok).toBe(false);
-    expect((await request(tv, "start")).ok).toBe(false);
-    expect((await request(host, "start")).ok).toBe(true);
+    expect((await request(tv, "start")).ok).toBe(true);
     await waitFor(() => guest.state.game.phase === "betting");
     expect((await bet(tv, 5)).ok).toBe(false);
     expect((await bet(host, 7)).ok).toBe(false);
@@ -178,6 +177,12 @@ describe("real Colyseus clients", () => {
     expect((await bet(tv, 5)).ok).toBe(false);
     const second = await player(tv.roomId, "display");
     expect((await request(second, "start")).ok).toBe(false);
+  });
+  it("makes a screen joining an existing room a co-host", async () => {
+    const host = await player();
+    const tv = await player(host.roomId, "display");
+    expect(tv.state.screenId).toBe(tv.sessionId);
+    expect((await request(tv, "start")).ok).toBe(true);
   });
   it("counts only players toward the player limit", async () => {
     const host = await player();
