@@ -232,6 +232,7 @@ function App() {
         <ThemeColor />
         <header className="tv-header">
           <div className="tv-actions">
+            <span className="brand-mark" aria-hidden="true">🎲</span>
             <Button
               variant="secondary"
               size="small"
@@ -289,6 +290,7 @@ function App() {
       {tv && room && game ? (
         <header className="tv-header">
           <div className="tv-actions">
+            <span className="brand-mark" aria-hidden="true">🎲</span>
             <Button
               variant="secondary"
               size="small"

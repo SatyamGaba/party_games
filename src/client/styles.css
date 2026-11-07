@@ -1006,6 +1006,12 @@
     padding: 1vh 2vh;
     border-radius: 1.6vh;
   }
+  [data-mode="tv"] .tv-actions .brand-mark {
+    width: 5vh;
+    height: 5vh;
+    font-size: 4vh;
+    flex-shrink: 0;
+  }
   [data-mode="tv"] .tv-actions svg {
     width: 2vh;
     height: 2vh;
