@@ -303,13 +303,51 @@
     align-items: center;
     justify-content: center;
   }
-  .card-art > .badge {
+  .game-thumbnail {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    color: var(--foreground);
+  }
+  button.game-thumbnail:focus-visible {
+    outline-offset: -5px;
+  }
+  .thumbnail-art {
     position: absolute;
-    top: 22px;
-    left: 24px;
-    font-size: 9px;
-    letter-spacing: 0.07em;
-    background: var(--surface);
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: filter 180ms ease, transform 180ms ease;
+  }
+  .thumbnail-play {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--primary-bg);
+    color: var(--primary-fg);
+    box-shadow: 0 8px 28px #0003;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 180ms ease, transform 180ms ease;
+    pointer-events: none;
+  }
+  .thumbnail-play svg {
+    margin-left: 4px;
+  }
+  button.game-thumbnail:not(:disabled):is(:hover, :focus-visible) .thumbnail-art,
+  .tv-tile:not(:disabled):is(:hover, :focus-visible) .thumbnail-art {
+    filter: blur(3px);
+    transform: scale(1.04);
+  }
+  button.game-thumbnail:not(:disabled):is(:hover, :focus-visible) .thumbnail-play,
+  .tv-tile:not(:disabled):is(:hover, :focus-visible) .thumbnail-play {
+    opacity: 1;
+    transform: scale(1);
   }
   .art-halo {
     position: absolute;
@@ -369,11 +407,6 @@
     line-height: 1.7;
     font-weight: 400;
     max-width: 370px;
-  }
-  .card-play {
-    width: 100%;
-    justify-content: space-between;
-    margin-top: 24px;
   }
   .how-card {
     padding: 32px;
@@ -828,16 +861,19 @@
     box-shadow: var(--shadow);
     text-align: left;
   }
-  .tv-tile svg {
-    width: 64px;
-    height: 64px;
-    color: var(--accent);
+  .tv-tile .game-thumbnail {
+    height: 170px;
+    border-radius: 16px;
+  }
+  .tv-tile .hero-die {
+    width: 90px;
+    height: 90px;
   }
   .tv-tile strong {
     font-size: 28px;
     letter-spacing: -1px;
   }
-  .tv-tile span {
+  .tv-tile > span:not(.game-thumbnail) {
     @apply text-label;
     color: var(--muted);
   }
@@ -1029,14 +1065,26 @@
     padding: 3.5vh;
     border-radius: 3vh;
   }
-  [data-mode="tv"] .tv-tile svg {
-    width: 8vh;
-    height: 8vh;
+  [data-mode="tv"] .tv-tile .game-thumbnail {
+    height: 20vh;
+    border-radius: 2vh;
+  }
+  [data-mode="tv"] .tv-tile .hero-die {
+    width: 11vh;
+    height: 11vh;
+  }
+  [data-mode="tv"] .tv-tile .thumbnail-play {
+    width: 9vh;
+    height: 9vh;
+  }
+  [data-mode="tv"] .tv-tile .thumbnail-play svg {
+    width: 4vh;
+    height: 4vh;
   }
   [data-mode="tv"] .tv-tile strong {
     font-size: 3.4vh;
   }
-  [data-mode="tv"] .tv-tile span {
+  [data-mode="tv"] .tv-tile > span:not(.game-thumbnail) {
     font-size: 1.8vh;
   }
   [data-mode="tv"] .notice {
@@ -1745,5 +1793,13 @@
   }
   .fff-player .fff-buzzer-status {
     min-height: 2.5em;
+  }
+}
+
+@media (hover: none) {
+  button.game-thumbnail:not(:disabled) .thumbnail-play,
+  .tv-tile:not(:disabled) .thumbnail-play {
+    opacity: 1;
+    transform: scale(1);
   }
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState, Suspense, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
+import { Button as PrimitiveButton } from "@base-ui/react/button";
 import { ThemeProvider, useTheme } from "next-themes";
 import {
   ArrowUpRight,
@@ -10,6 +11,8 @@ import {
   ArrowLeft,
   Maximize,
   Minimize,
+  Play,
+  type LucideIcon,
 } from "lucide-react";
 import {
   Button,
@@ -27,6 +30,19 @@ import { clientGames } from "../games/registry.client";
 import { clientError } from "../lib/errors";
 import "@fontsource-variable/inter";
 import "./styles.css";
+function GameArtwork({ Icon }: { Icon: LucideIcon }) {
+  return (
+    <>
+      <span className="thumbnail-art" aria-hidden="true">
+        <span className="art-halo" />
+        <Icon className="hero-die" strokeWidth={1.3} />
+      </span>
+      <span className="thumbnail-play" aria-hidden="true">
+        <Play size={30} fill="currentColor" strokeWidth={1.5} />
+      </span>
+    </>
+  );
+}
 function ThemeColor() {
   const { resolvedTheme } = useTheme();
   useEffect(() => {
@@ -237,9 +253,10 @@ function App() {
           <p className="eyebrow">PICK A GAME TO HOST</p>
           <div className="tv-grid">
             {Object.values(clientGames).map(({ manifest, Icon }) => (
-              <button
+              <PrimitiveButton
                 key={manifest.id}
                 className="tv-tile"
+                aria-label={`Play ${manifest.name}`}
                 disabled={!manifest.tv || busy || !ready}
                 onClick={() => {
                   setGameId(manifest.id);
@@ -247,7 +264,9 @@ function App() {
                   setModal("choose");
                 }}
               >
-                <Icon strokeWidth={1.3} />
+                <span className="card-art game-thumbnail">
+                  <GameArtwork Icon={Icon} />
+                </span>
                 <strong>{manifest.name}</strong>
                 <span>
                   {manifest.tv
@@ -257,7 +276,7 @@ function App() {
                       " players"
                     : "Phone only · start it from your phone"}
                 </span>
-              </button>
+              </PrimitiveButton>
             ))}
           </div>
         </main>
@@ -397,10 +416,18 @@ function App() {
             <div className="game-grid">
               {Object.values(clientGames).map(({ manifest, Icon }) => (
                 <Card className="game-card" key={manifest.id}>
-                  <div className="card-art">
-                    <div className="art-halo" />
-                    <Icon className="hero-die" strokeWidth={1.3} />
-                  </div>
+                  <PrimitiveButton
+                    className="card-art game-thumbnail"
+                    aria-label={`Play ${manifest.name}`}
+                    disabled={!ready}
+                    onClick={() => {
+                      setGameId(manifest.id);
+                      setError("");
+                      setModal("choose");
+                    }}
+                  >
+                    <GameArtwork Icon={Icon} />
+                  </PrimitiveButton>
                   <div className="card-body">
                     <div className="tags">
                       <Badge>
@@ -410,18 +437,6 @@ function App() {
                     </div>
                     <h3>{manifest.name}</h3>
                     <p>{manifest.description}</p>
-                    <Button
-                      variant="primary"
-                      className="card-play"
-                      disabled={!ready}
-                      onClick={() => {
-                        setGameId(manifest.id);
-                        setError("");
-                        setModal("choose");
-                      }}
-                    >
-                      Play <ArrowRight size={19} />
-                    </Button>
                   </div>
                 </Card>
               ))}
