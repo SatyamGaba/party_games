@@ -243,8 +243,9 @@ function App() {
           </div>
           <h1>HouseParty</h1>
           <div className="tv-code">
-            <span className={"status-dot " + (online && ready ? "live" : "")} />
+            <ConnectionStatus live={online && ready} inRoom={!!room} />
             <span>{location.host}</span>
+            <ThemeMenu />
           </div>
         </header>
         {error && <Notice onDismiss={() => setError("")}>{error}</Notice>}
@@ -309,9 +310,10 @@ function App() {
           </div>
           <h1>{game.manifest.name}</h1>
           <div className="tv-code">
-            <span className={"status-dot " + (online && ready ? "live" : "")} />
+            <ConnectionStatus live={online && ready} inRoom={!!room} />
             <span>JOIN AT {location.host}</span>
             <strong>{room.code}</strong>
+            <ThemeMenu />
           </div>
         </header>
       ) : (

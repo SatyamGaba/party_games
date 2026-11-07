@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -13,6 +13,7 @@ import { Badge, Button, Input, Modal, Notice } from "../../components/ui";
 import { QrCode } from "../../components/qr";
 import type { GameScreenProps } from "../../platform/contracts";
 import { Choice, MoreOptions, ScoreEditor, useGameAction } from "./controls";
+import { useBuzzerSound } from "./buzzer";
 import { QuestionMedia } from "./media";
 import { Results } from "./results";
 import {
@@ -58,6 +59,18 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
   const game = snapshot.game as GameView;
   const display = session.role === "display",
     host = !display && snapshot.hostId === you;
+  const buzzer = useBuzzerSound(
+    display && connected && !game.paused && ["ready", "open"].includes(game.phase),
+  );
+  const previousBuzz = useRef({ scope: game.scope, answering: game.answering });
+  useEffect(() => {
+    const previous = previousBuzz.current;
+    previousBuzz.current = { scope: game.scope, answering: game.answering };
+    if (display && connected && !game.paused && game.phase === "answering" && game.answering &&
+        previous.scope === game.scope && previous.answering !== game.answering && buzzer.enabled) {
+      buzzer.play();
+    }
+  }, [display, connected, game.scope, game.answering, game.phase, game.paused, buzzer.enabled, buzzer.play]);
   const { act, busy, error, clearError } = useGameAction(send, game.revision);
   const [packChoice, setPackChoice] = useState(""),
     [questionChoice, setQuestionChoice] = useState("");
@@ -373,7 +386,10 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
             <Button
               className={`fff-buzzer ${ownTurn && !game.paused ? "fff-buzzer-won" : buzzerDisabled ? "fff-buzzer-off" : ""}`}
               disabled={buzzerDisabled}
-              onClick={() => act("buzz", { scope: game.scope })}
+              onClick={() => {
+                buzzer.play();
+                void act("buzz", { scope: game.scope });
+              }}
               aria-label={
                 ownTurn
                   ? "You won the buzz"
@@ -432,6 +448,9 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
     <main
       className={`room-page fff-page ${display ? "fff-display" : !host ? "fff-player" : ""}`}
     >
+      {display && !buzzer.enabled && (
+        <Button onClick={buzzer.enable}>Enable buzzer sound on TV</Button>
+      )}
       <div className="room-title">
         <div>
           <p className="eyebrow">
