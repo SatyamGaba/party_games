@@ -157,16 +157,8 @@
     @apply flex items-center justify-center;
     width: 44px;
     height: 44px;
-    border-radius: 15px;
-    background: var(--foreground);
-    color: var(--background);
-  }
-  .brand-sub {
-    @apply text-caption;
-    letter-spacing: 0;
-    color: var(--muted);
-    margin-left: 10px;
-    font-weight: 500;
+    font-size: 32px;
+    line-height: 1;
   }
   .header-right {
     @apply flex items-center gap-3;
@@ -887,8 +879,7 @@
   .site-header {
     min-height: 82px;
   }
-  .tv-open-label,
-  .brand-sub {
+  .tv-open-label {
     display: none;
   }
   .header-right {

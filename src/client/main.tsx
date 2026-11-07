@@ -226,7 +226,7 @@ function App() {
               {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
             </Button>
           </div>
-          <h1>Party</h1>
+          <h1>HouseParty</h1>
           <div className="tv-code">
             <span className={"status-dot " + (online && ready ? "live" : "")} />
             <span>{location.host}</span>
@@ -305,10 +305,10 @@ function App() {
             if (room) e.preventDefault();
           }}
         >
-          <span className="brand-mark">
-            <Dice5 size={24} />
+          <span className="brand-mark" aria-hidden="true">
+            🎲
           </span>
-          Party<span className="brand-sub">/ good company</span>
+          HouseParty
         </a>
         <div className="header-right">
           <ConnectionStatus live={online && ready} inRoom={!!room} />

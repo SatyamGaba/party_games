@@ -1,4 +1,4 @@
-# Party
+# HouseParty
 
 A self-hosted party-game platform for phones and shared displays. React + Base UI, Colyseus, TypeScript, SQLite, and a Curl-inspired theme with self-hosted Inter.
 
