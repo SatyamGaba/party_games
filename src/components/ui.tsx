@@ -3,6 +3,7 @@ import { Button as PrimitiveButton } from "@base-ui/react/button";
 import { Input as PrimitiveInput } from "@base-ui/react/input";
 import { Dialog } from "@base-ui/react/dialog";
 import { Menu } from "@base-ui/react/menu";
+import { Tooltip } from "@base-ui/react/tooltip";
 import { cva, type VariantProps } from "class-variance-authority";
 import { X, Sun, Moon, Monitor } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -146,5 +147,35 @@ export function ThemeMenu() {
         </Menu.Positioner>
       </Menu.Portal>
     </Menu.Root>
+  );
+}
+
+export function ConnectionStatus({
+  live,
+  inRoom,
+}: {
+  live: boolean;
+  inRoom: boolean;
+}) {
+  const label = !live
+    ? "Connecting…"
+    : inRoom
+      ? "Connected to room"
+      : "Ready to play";
+  return (
+    <Tooltip.Provider delay={100}>
+      <Tooltip.Root>
+        <Tooltip.Trigger
+          className={"connection-indicator " + (live ? "live" : "pending")}
+          aria-label={label}
+          render={<span role="status" tabIndex={0} />}
+        />
+        <Tooltip.Portal>
+          <Tooltip.Positioner sideOffset={8}>
+            <Tooltip.Popup className="tooltip">{label}</Tooltip.Popup>
+          </Tooltip.Positioner>
+        </Tooltip.Portal>
+      </Tooltip.Root>
+    </Tooltip.Provider>
   );
 }

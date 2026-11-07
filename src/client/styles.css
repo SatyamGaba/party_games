@@ -171,9 +171,43 @@
   .header-right {
     @apply flex items-center gap-3;
   }
-  .connection-label {
-    @apply text-caption;
-    color: var(--muted);
+  .connection-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: default;
+  }
+  .connection-indicator::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--muted);
+  }
+  .connection-indicator.live::before {
+    background: var(--positive);
+    box-shadow: 0 0 0 4px var(--positive-soft);
+  }
+  .connection-indicator.pending::before {
+    background: var(--accent);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+  .tooltip {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 6px 12px;
+    font-size: 13px;
+    box-shadow: var(--shadow);
+    z-index: 70;
   }
   .status-dot {
     width: 7px;
@@ -857,8 +891,7 @@
   .site-header {
     min-height: 82px;
   }
-  .brand-sub,
-  .connection-label {
+  .brand-sub {
     display: none;
   }
   .header-right {

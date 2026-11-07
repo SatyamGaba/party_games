@@ -22,6 +22,7 @@ import {
   Notice,
   PageHeader,
   ThemeMenu,
+  ConnectionStatus,
 } from "../components/ui";
 import { useRoomConnection, enterRoom } from "../platform/client/session";
 import { clientGames } from "../games/registry.client";
@@ -310,14 +311,7 @@ function App() {
           Party<span className="brand-sub">/ good company</span>
         </a>
         <div className="header-right">
-          <span className={"status-dot " + (online && ready ? "live" : "")} />
-          <span className="connection-label">
-            {online && ready
-              ? room
-                ? "Connected"
-                : "Ready to play"
-              : "Connecting…"}
-          </span>
+          <ConnectionStatus live={online && ready} inRoom={!!room} />
           <ThemeMenu />
           {room && (
             <Button variant="secondary" size="small" onClick={leave}>
