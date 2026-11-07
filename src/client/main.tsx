@@ -313,8 +313,8 @@ function App() {
                   setCode(v.toUpperCase().replace(/[^A-Z0-9]/g, ""))
                 }
                 className="code-input"
-                maxLength={5}
-                minLength={5}
+                maxLength={4}
+                minLength={4}
                 required
                 autoComplete="off"
                 autoFocus

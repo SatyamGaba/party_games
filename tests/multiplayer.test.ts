@@ -77,7 +77,7 @@ describe("real Colyseus clients", () => {
     const host = await player();
     const guest = await player(host.roomId);
     const tv = await player(host.roomId, "display");
-    expect(host.roomId).toMatch(/^[A-HJ-NP-Z2-9]{5}$/);
+    expect(host.roomId).toMatch(/^[A-HJ-NP-Z2-9]{4}$/);
     expect((await request(guest, "start")).ok).toBe(false);
     expect((await request(tv, "start")).ok).toBe(false);
     expect((await request(host, "start")).ok).toBe(true);

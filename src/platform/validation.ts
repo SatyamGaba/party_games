@@ -11,7 +11,7 @@ export const codeSchema = z
   .string()
   .trim()
   .toUpperCase()
-  .regex(/^[A-HJ-NP-Z2-9]{5}$/, "Enter a valid five-character room code.");
+  .regex(/^[A-HJ-NP-Z2-9]{4}$/, "Enter a valid four-character room code.");
 export const submissionSchema = z.object({
   submissionId: z.string().min(1).max(80),
   scope: z.string().min(1).max(80),

@@ -16,7 +16,7 @@ function allocateCode() {
   let code: string;
   do {
     code = Array.from(
-      { length: 5 },
+      { length: 4 },
       () => alphabet[randomInt(alphabet.length)],
     ).join("");
   } while (codes.has(code));
