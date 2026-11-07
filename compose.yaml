@@ -3,7 +3,7 @@ services:
     build: .
     restart: unless-stopped
     ports:
-      - "${PARTY_PORT:-3000}:3000"
+      - "${PARTY_PORT:-7797}:3000"
     environment:
       PORT: 3000
       DATA_DIR: /app/data

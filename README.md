@@ -19,6 +19,9 @@ Production preview: `npm run build && npm start`, then open http://localhost:300
 
 ## Unraid deployment
 
+The live NAS deployment and management details are recorded in [docs/unraid-deployment.md](docs/unraid-deployment.md).
+
+
 Install Docker Compose support on Unraid or use its Compose Manager plugin. Copy the project to a persistent share, then run:
 
 ```sh
@@ -26,19 +29,19 @@ docker compose up -d --build
 docker compose logs -f party-games
 ```
 
-Visit http://NAS-IP:3000. Set `PARTY_PORT` to change the host port. The named `party-data` volume holds SQLite data; back it up using your existing Unraid backup process. For an appdata bind mount, replace the volume with `/mnt/user/appdata/party-games:/app/data` and give the directory ownership to container UID/GID 1000. One process/container is intentional; do not scale replicas without revisiting Colyseus presence, matchmaking, and room-code allocation.
+Visit http://NAS-IP:7797. Set `PARTY_PORT` to change the host port. The named `party-data` volume holds SQLite data; back it up using your existing Unraid backup process. For an appdata bind mount, replace the volume with `/mnt/user/appdata/party-games:/app/data` and give the directory ownership to container UID/GID 1000. One process/container is intentional; do not scale replicas without revisiting Colyseus presence, matchmaking, and room-code allocation.
 
 The image uses Node.js 26 LTS, compiles the server to JavaScript, runs as a non-root user, and exposes a health check at `/health`. Compose restarts the application and forwards termination signals through `init: true`. SIGTERM closes active rooms and the database. Active games end on server restart; completed results remain in SQLite.
 
 ## party.satyamgaba.com
 
-Point DNS at your chosen public ingress. Configure your existing reverse proxy to terminate HTTPS and forward **all paths**, including Colyseus HTTP matchmaking and WebSocket upgrades, to NAS-IP:3000. Keep the frontend and backend on the same origin. If using a tunnel, it must support WebSockets. No DNS, router, or NAS configuration is changed by this repository.
+Point DNS at your chosen public ingress. Configure your existing reverse proxy to terminate HTTPS and forward **all paths**, including Colyseus HTTP matchmaking and WebSocket upgrades, to NAS-IP:7797. Keep the frontend and backend on the same origin. If using a tunnel, it must support WebSockets. No DNS, router, or NAS configuration is changed by this repository.
 
 Example for an existing Caddy reverse proxy:
 
 ```caddy
 party.satyamgaba.com {
-    reverse_proxy NAS-IP:3000
+    reverse_proxy NAS-IP:7797
 }
 ```
 
