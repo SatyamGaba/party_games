@@ -6,7 +6,6 @@ import {
   Dice5,
   Monitor,
   Users,
-  Sparkles,
   Check,
   ArrowRight,
   ArrowLeft,
@@ -377,7 +376,6 @@ function App() {
       ) : (
         <main className="home">
           <PageHeader
-            eyebrow="YOUR PEOPLE. YOUR GAME NIGHT."
             title={
               <>
                 Good times.
@@ -394,28 +392,19 @@ function App() {
           <section className="shelf">
             <div className="section-heading">
               <h2>Pick your next obsession</h2>
-              <span>{Object.keys(clientGames).length} GAME · NO DOWNLOADS</span>
             </div>
             <div className="game-grid">
               {Object.values(clientGames).map(({ manifest }) => (
                 <Card className="game-card" key={manifest.id}>
                   <div className="card-art">
-                    <Badge>THE GAME NIGHT STARTER</Badge>
                     <div className="art-halo" />
                     <Dice5 className="hero-die" strokeWidth={1.3} />
-                    <Sparkles className="art-sparkle" />
-                    <span className="art-caption">
-                      A little luck. A lot of cheering.
-                    </span>
                   </div>
                   <div className="card-body">
                     <div className="tags">
                       <Badge>
                         <Users size={13} /> {manifest.minPlayers}–
                         {manifest.maxPlayers} players
-                      </Badge>
-                      <Badge>
-                        <Monitor size={13} /> Shared screen
                       </Badge>
                     </div>
                     <h3>{manifest.name}</h3>
@@ -474,7 +463,6 @@ function App() {
           </section>
           <footer>
             <span>Built for game nights that run a little longer.</span>
-            <span>Bring snacks. We brought the games.</span>
           </footer>
         </main>
       )}
