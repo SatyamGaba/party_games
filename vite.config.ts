@@ -7,6 +7,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "/matchmake": "http://localhost:3000",
+      "/fff-media": "http://localhost:3000",
       "/health": "http://localhost:3000",
       "^/[A-Za-z0-9_-]+/[A-Z2-9]{4}": {
         target: "http://localhost:3000",

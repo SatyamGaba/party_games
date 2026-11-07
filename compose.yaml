@@ -7,8 +7,10 @@ services:
     environment:
       PORT: 3000
       DATA_DIR: /app/data
+      PACKS_DIR: /app/packs
     volumes:
       - party-data:/app/data
+      - ${PARTY_PACKS_DIR:-./packs}:/app/packs:ro
     init: true
 volumes:
   party-data:

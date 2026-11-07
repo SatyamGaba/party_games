@@ -6,7 +6,7 @@ COPY . .
 RUN npm run build
 
 FROM node:26-bookworm-slim
-ENV NODE_ENV=production PORT=3000 DATA_DIR=/app/data
+ENV NODE_ENV=production PORT=3000 DATA_DIR=/app/data PACKS_DIR=/app/packs
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev && mkdir -p /app/data && chown node:node /app/data

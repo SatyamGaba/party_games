@@ -1,0 +1,24 @@
+title: Diwali 2026
+questions:
+  - id: festival
+    type: text
+    prompt: What is Diwali commonly known as the festival of?
+    text: Diwali is the festival of…?
+    answer: Lights
+
+  - id: lamps
+    type: text
+    prompt: What are the small oil lamps lit during Diwali called?
+    answer: Diyas
+
+  - id: floor-art
+    type: text
+    prompt: What is the decorative floor art often made with coloured powders called?
+    answer: Rangoli
+
+  - id: quick-maths
+    type: text
+    prompt: You light 12 diyas, then 8 more. How many are lit in total?
+    answer: "20"
+    reward: 10
+    penalty: 5

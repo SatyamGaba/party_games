@@ -53,6 +53,14 @@ Roll the Dice supports 1–50 players and separate display clients. The host pla
 
 Late arrivals wait in the waiting room until the current round ends (`lateJoin: "between-rounds"` in the manifest). Unanswered guesses of disconnected players are skipped after 30 seconds. Accepted answers remain eligible. When the host leaves permanently, control goes to the earliest connected player; while the host is offline, any player may start the next round. Rooms disappear when no clients or reconnection reservations remain.
 
+## Fastest Finger First
+
+A non-playing host controls questions, judging, and scores from a private screen. Players get a phone buzzer; an optional TV shows text, images, audio, or video. Start question and Open buzzers are separate actions. Early buzzing locks a player out without deducting points. Wrong answers deduct points and lock the player out; reopening starts a fresh race among the remaining players.
+
+Default scoring is +10/−5, configurable per question during play. The host can undo the latest verdict, edit individual totals through More options, pause, reveal answers, end the game, and navigate the final statistics slideshow. A host disconnection pauses play without transferring private controls to players. Another game in the same room resets scores and stats while retaining saved results.
+
+Question packs are external human-readable YAML files with local media, mounted into Docker read-only; they are not included in the image. See [the pack authoring and deployment guide](packs/README.md). For Compose, set `PARTY_PACKS_DIR` to the host folder containing packs. A new game picks up file edits; active games keep their loaded question data and immutable media copies.
+
 ## Rejoining (all games)
 
 Each participant has a stable id for the life of the room; games key per-player state by `idOf(client)`, not by the connection's `sessionId`. Disconnected participants are shown as "Disconnected" and keep their seat for 5 minutes (`LIMITS.reconnectSeconds`). The client keeps the reconnection token and a random per-device player key in `localStorage`, so closing the tab, a reload, or a phone discarding the page brings the same person back. If the token no longer works, the client rejoins with the player key and gets their seat, score and answers back, even after the hold expired, as long as the room still exists. Returning players skip the waiting room. Opening the room in a second tab moves the seat there; the old tab is told it was replaced. Pressing "Leave room" gives the seat up for good. Keys and tokens are never synced to other clients or logged.

@@ -3,13 +3,15 @@ import { create } from "zustand";
 import { useEffect } from "react";
 import type { Reply, Role, RoomSnapshot, SessionView } from "../contracts";
 import { codeSchema, joinSchema } from "../validation";
+import { sessionContext } from "./session-context";
 import { clientError } from "../../lib/errors";
 /**
  * Saved in localStorage (not sessionStorage) so closing the tab, a phone
  * discarding a backgrounded page, or the browser restarting doesn't turn a
  * returning player into a new one.
  */
-const key = "party.session.v2";
+const context = sessionContext(location.pathname, location.search);
+const key = context.storageKey;
 const deviceKey = "party.device.v1";
 /** The server forgets a seat after this anyway; don't try to reclaim older ones. */
 const maxAgeMs = 6 * 60 * 60 * 1000;
@@ -37,7 +39,9 @@ function readSession(): SavedSession | null {
       typeof value.savedAt === "number" &&
       Date.now() - value.savedAt < maxAgeMs &&
       "role" in value &&
-      (value.role === "player" || value.role === "display")
+      (value.role === "player" || value.role === "display") &&
+      value.role === context.role &&
+      (!context.requestedRoom || value.roomId === context.requestedRoom)
     )
       return value as SavedSession;
   } catch {
@@ -107,7 +111,8 @@ function sdk() {
   ));
 }
 /** Room ids are "<gameId>-<code>"; game ids may contain dashes. */
-const codeOfRoom = (roomId: string) => roomId.slice(roomId.lastIndexOf("-") + 1);
+const codeOfRoom = (roomId: string) =>
+  roomId.slice(roomId.lastIndexOf("-") + 1);
 const SERVER_CONSENTED = 4000;
 function attach(room: Room, role: Role, name: string, generation: number) {
   active = room;
@@ -228,7 +233,9 @@ export async function enterRoom(options: {
   try {
     const room = options.gameId
       ? await (await sdk()).create(options.gameId, parsed)
-      : await (await sdk()).joinById(
+      : await (
+          await sdk()
+        ).joinById(
           options.joinGameId + "-" + codeSchema.parse(options.code),
           parsed,
         );
@@ -244,6 +251,7 @@ export async function enterRoom(options: {
 export async function sendMessage(
   type: string,
   payload: unknown,
+  options?: { timeoutMs?: number },
 ): Promise<Reply> {
   if (
     !active ||
@@ -252,7 +260,7 @@ export async function sendMessage(
   )
     throw new Error("Waiting to reconnect…");
   const reply = await active.request<unknown, Reply>(type, payload, {
-    timeout: 7000,
+    timeout: Math.min(120000, Math.max(1000, options?.timeoutMs ?? 7000)),
   });
   if (!reply.ok) throw new Error(reply.error ?? "Please try again.");
   return reply;

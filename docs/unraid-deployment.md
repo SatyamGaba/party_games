@@ -54,3 +54,16 @@ The built container passed its health check on Unraid. Real clients connected fr
 ## Automatic deployment
 
 GitHub Actions checks each push to `main`, builds the application image, and publishes both `latest` and a commit-SHA tag to GitHub Container Registry. The NAS updater pulls `latest` and recreates only the Party container when the image changes. It runs locally and does not require inbound SSH. Updates restart the app, ending active rooms; SQLite data remains in the existing bind mount. If a build fails, the previous image continues running. Use a commit-SHA image tag in the NAS compose file to roll back and pause automatic updates while investigating.
+
+## Fastest Finger First packs
+
+The new game expects external packs; the application image does not contain question files or media. Before enabling it on the NAS, create `/mnt/user/appdata/party-games/packs`, copy the desired packs into it, and add the following to the NAS Compose service while retaining its existing data mount:
+
+```yaml
+environment:
+  PACKS_DIR: /app/packs
+volumes:
+  - /mnt/user/appdata/party-games/packs:/app/packs:ro
+```
+
+These are additions to the existing service configuration, not a replacement for its environment or volumes. Pack folders must be readable by UID/GID 1000. The host can refresh the pack list and load updated files for a new game without rebuilding the image or restarting the app. Active games retain their loaded data and immutable media copies under the existing data mount. See [the pack guide](../packs/README.md).

@@ -48,5 +48,9 @@ export interface SessionView {
 export interface GameScreenProps {
   session: SessionView;
   connected: boolean;
-  send(type: string, payload: unknown): Promise<Reply>;
+  send(
+    type: string,
+    payload: unknown,
+    options?: { timeoutMs?: number },
+  ): Promise<Reply>;
 }

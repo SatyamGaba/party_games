@@ -34,7 +34,8 @@ function allocateCode(gameId: string) {
 }
 /** Colyseus room ids are global, so the per-game code is namespaced by game. */
 export const roomIdFor = (gameId: string, code: string) => gameId + "-" + code;
-export const codeOf = (roomId: string) => roomId.slice(roomId.lastIndexOf("-") + 1);
+export const codeOf = (roomId: string) =>
+  roomId.slice(roomId.lastIndexOf("-") + 1);
 /** Server-initiated close sent to a connection whose seat was reclaimed elsewhere. */
 export const REPLACED_REASON = "replaced";
 /**
@@ -49,7 +50,7 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
   state: S;
 }> {
   maxClients = LIMITS.clients;
-  maxMessagesPerSecond = LIMITS.messagesPerSecond;
+  maxMessagesPerSecond: number = LIMITS.messagesPerSecond;
   patchRate = 50;
   /** Games without a shared-screen view set this to false. */
   protected allowsDisplay = true;
@@ -204,7 +205,11 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
     const participant = this.state.players.get(id);
     if (!participant) return;
     participant.connected = true;
-    if (participant.role === "player" && !participant.waiting && !this.state.hostId)
+    if (
+      participant.role === "player" &&
+      !participant.waiting &&
+      !this.state.hostId
+    )
       this.state.hostId = id;
     this.participantJoined(client, id);
   }
@@ -276,16 +281,19 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
   protected registerMessage<T>(
     type: string,
     schema: ZodType<T>,
-    handler: (client: Client, payload: T) => void,
+    handler: (client: Client, payload: T) => void | Promise<void>,
   ) {
-    this.onMessage(type, (client: Client, payload: unknown): Reply => {
-      try {
-        this.admitWaiting();
-        handler(client, schema.parse(payload));
-        return { ok: true };
-      } catch (error) {
-        return { ok: false, error: publicError(error) };
-      }
-    });
+    this.onMessage(
+      type,
+      async (client: Client, payload: unknown): Promise<Reply> => {
+        try {
+          this.admitWaiting();
+          await handler(client, schema.parse(payload));
+          return { ok: true };
+        } catch (error) {
+          return { ok: false, error: publicError(error) };
+        }
+      },
+    );
   }
 }

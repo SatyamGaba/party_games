@@ -1,11 +1,14 @@
-import express from "express";
+import express, { type RequestHandler } from "express";
 import { createServer } from "node:http";
 import { resolve } from "node:path";
 import { Server, Room } from "@colyseus/core";
 import { WebSocketTransport } from "@colyseus/ws-transport";
 import { RateLimiterMemory } from "rate-limiter-flexible";
 import { LIMITS } from "../../lib/config";
-export function createPartyServer(games: Record<string, new () => Room>) {
+export function createPartyServer(
+  games: Record<string, new () => Room>,
+  middleware: RequestHandler[] = [],
+) {
   const app = express();
   app.disable("x-powered-by");
   app.use((_req, res, next) => {
@@ -24,6 +27,7 @@ export function createPartyServer(games: Record<string, new () => Room>) {
           .json({ error: "Too many requests. Try again shortly." }),
       );
   });
+  for (const handler of middleware) app.use(handler);
   app.get("/health", (_req, res) => res.json({ ok: true }));
   const http = createServer(app);
   const transport = new WebSocketTransport({
