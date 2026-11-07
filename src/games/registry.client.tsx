@@ -24,13 +24,25 @@ export interface ClientGame {
   manifest: GameManifest;
   Screen: ComponentType<GameScreenProps>;
   Icon: LucideIcon;
+  thumbnail: string;
 }
 export const clientGames: Record<string, ClientGame> = {
-  [fastest.id]: { manifest: fastest, Screen: FastestScreen, Icon: Hand },
-  [manifest.id]: { manifest, Screen: DiceScreen, Icon: Dice5 },
+  [fastest.id]: {
+    manifest: fastest,
+    Screen: FastestScreen,
+    Icon: Hand,
+    thumbnail: "/thumbnails/fastest-finger-first.jpg",
+  },
+  [manifest.id]: {
+    manifest,
+    Screen: DiceScreen,
+    Icon: Dice5,
+    thumbnail: "/thumbnails/roll-the-dice.jpg",
+  },
   [undercover.id]: {
     manifest: undercover,
     Screen: UndercoverScreen,
     Icon: Chameleon,
+    thumbnail: "/thumbnails/undercover.jpg",
   },
 };

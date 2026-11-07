@@ -12,7 +12,6 @@ import {
   Maximize,
   Minimize,
   Play,
-  type LucideIcon,
 } from "lucide-react";
 import {
   Button,
@@ -30,12 +29,12 @@ import { clientGames } from "../games/registry.client";
 import { clientError } from "../lib/errors";
 import "@fontsource-variable/inter";
 import "./styles.css";
-function GameArtwork({ Icon }: { Icon: LucideIcon }) {
+function GameArtwork({ thumbnail }: { thumbnail: string }) {
   return (
     <>
       <span className="thumbnail-art" aria-hidden="true">
-        <span className="art-halo" />
-        <Icon className="hero-die" strokeWidth={1.3} />
+        <img className="thumbnail-image" src={thumbnail} alt="" decoding="async" />
+        <img className="thumbnail-edge" src={thumbnail} alt="" decoding="async" />
       </span>
       <span className="thumbnail-play" aria-hidden="true">
         <Play size={30} fill="currentColor" strokeWidth={1.5} />
@@ -252,7 +251,7 @@ function App() {
         <main className="tv-launcher">
           <p className="eyebrow">PICK A GAME TO HOST</p>
           <div className="tv-grid">
-            {Object.values(clientGames).map(({ manifest, Icon }) => (
+            {Object.values(clientGames).map(({ manifest, thumbnail }) => (
               <PrimitiveButton
                 key={manifest.id}
                 className="tv-tile"
@@ -265,7 +264,7 @@ function App() {
                 }}
               >
                 <span className="card-art game-thumbnail">
-                  <GameArtwork Icon={Icon} />
+                  <GameArtwork thumbnail={thumbnail} />
                 </span>
                 <strong>{manifest.name}</strong>
                 <span>
@@ -414,7 +413,7 @@ function App() {
               <h2>Pick your next obsession</h2>
             </div>
             <div className="game-grid">
-              {Object.values(clientGames).map(({ manifest, Icon }) => (
+              {Object.values(clientGames).map(({ manifest, thumbnail }) => (
                 <Card className="game-card" key={manifest.id}>
                   <PrimitiveButton
                     className="card-art game-thumbnail"
@@ -426,7 +425,7 @@ function App() {
                       setModal("choose");
                     }}
                   >
-                    <GameArtwork Icon={Icon} />
+                    <GameArtwork thumbnail={thumbnail} />
                   </PrimitiveButton>
                   <div className="card-body">
                     <div className="tags">
