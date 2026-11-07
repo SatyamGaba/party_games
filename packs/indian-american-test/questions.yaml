@@ -1,0 +1,169 @@
+{
+  "title": "Indian American Test Pack - All Media",
+  "questions": [
+    {
+      "id": "warmup-holi",
+      "type": "text",
+      "prompt": "Which Indian festival is widely known as the festival of colours?",
+      "answer": "Holi",
+      "reward": 10,
+      "penalty": 0
+    },
+    {
+      "id": "picture-india",
+      "type": "image",
+      "prompt": "Which country does this flag represent?",
+      "answer": "India",
+      "media": "media/flag-india.png",
+      "text": "Name the country."
+    },
+    {
+      "id": "audio-chai",
+      "type": "audio",
+      "prompt": "Name the drink described in the audio.",
+      "answer": "Masala chai (accept chai or spiced milk tea)",
+      "media": "media/chai.mp3",
+      "text": "Listen and name the drink.",
+      "start": 1
+    },
+    {
+      "id": "video-three-idiots",
+      "type": "video",
+      "prompt": "Name the Hindi film as the clues appear.",
+      "answer": "3 Idiots (accept Three Idiots)",
+      "media": "media/three-idiots.mp4",
+      "text": "Name the Hindi film.",
+      "start": 0,
+      "end": 11,
+      "reward": 20,
+      "penalty": 5
+    },
+    {
+      "id": "cricket-dhoni",
+      "type": "text",
+      "prompt": "Who captained India to victory in the 2011 men's Cricket World Cup?",
+      "answer": "MS Dhoni (accept Mahendra Singh Dhoni or Dhoni)"
+    },
+    {
+      "id": "picture-wicket",
+      "type": "image",
+      "prompt": "This diagram shows three stumps, two bails, and a ball. Which sport is it?",
+      "answer": "Cricket",
+      "media": "media/wicket.png",
+      "text": "Name the sport."
+    },
+    {
+      "id": "audio-thanksgiving",
+      "type": "audio",
+      "prompt": "Which US holiday is described in the audio?",
+      "answer": "Thanksgiving (accept Thanksgiving Day)",
+      "media": "media/thanksgiving.mp3",
+      "text": "Name the US holiday.",
+      "start": 1
+    },
+    {
+      "id": "video-golden-gate",
+      "type": "video",
+      "prompt": "Which San Francisco bridge do the clues describe?",
+      "answer": "Golden Gate Bridge",
+      "media": "media/golden-gate.mp4",
+      "text": "Name the bridge.",
+      "start": 2,
+      "end": 11
+    },
+    {
+      "id": "bollywood-ddlj",
+      "type": "text",
+      "prompt": "What does DDLJ stand for, in the title of the Shah Rukh Khan and Kajol film?",
+      "answer": "Dilwale Dulhania Le Jayenge",
+      "reward": 20,
+      "penalty": 10
+    },
+    {
+      "id": "food-guac",
+      "type": "text",
+      "prompt": "Which fruit is the main ingredient in guacamole?",
+      "answer": "Avocado"
+    },
+    {
+      "id": "picture-rangoli",
+      "type": "image",
+      "prompt": "What decorative floor art does this colourful dot-and-petal design represent?",
+      "answer": "Rangoli (accept kolam or muggu for this stylised design)",
+      "media": "media/rangoli.png",
+      "text": "Name the decorative art form."
+    },
+    {
+      "id": "audio-lagaan",
+      "type": "audio",
+      "prompt": "Name the Hindi film described in the audio.",
+      "answer": "Lagaan",
+      "media": "media/lagaan.mp3",
+      "start": 1,
+      "reward": 20,
+      "penalty": 10
+    },
+    {
+      "id": "video-dosa",
+      "type": "video",
+      "prompt": "Name the South Indian dish as the clues appear.",
+      "answer": "Dosa (accept dosai)",
+      "media": "media/dosa.mp4",
+      "text": "Name the dish.",
+      "end": 10
+    },
+    {
+      "id": "festival-onam",
+      "type": "text",
+      "prompt": "Onam is a major festival associated with which Indian state?",
+      "answer": "Kerala"
+    },
+    {
+      "id": "us-sport",
+      "type": "text",
+      "prompt": "In which sport would you score a touchdown?",
+      "answer": "American football (accept football)"
+    },
+    {
+      "id": "picture-us",
+      "type": "image",
+      "prompt": "How many states are represented by the stars on the US flag?",
+      "answer": "50 (fifty)",
+      "media": "media/flag-us.png",
+      "text": "How many states do the stars represent?"
+    },
+    {
+      "id": "audio-diwali",
+      "type": "audio",
+      "prompt": "Which festival is described in the audio?",
+      "answer": "Diwali (accept Deepavali)",
+      "media": "media/diwali.mp3",
+      "text": "Listen and name the festival.",
+      "start": 1
+    },
+    {
+      "id": "video-holi-silent",
+      "type": "video",
+      "prompt": "Which festival do these silent visual clues describe?",
+      "answer": "Holi",
+      "media": "media/holi.mp4",
+      "text": "Silent round: name the festival.",
+      "start": 1,
+      "end": 11
+    },
+    {
+      "id": "india-us-capitals",
+      "type": "text",
+      "prompt": "Name both national capitals: India and the United States.",
+      "answer": "New Delhi and Washington, D.C. (both required)",
+      "reward": 20,
+      "penalty": 5
+    },
+    {
+      "id": "food-paneer",
+      "type": "text",
+      "prompt": "Which fresh Indian cheese is used in palak paneer and matar paneer?",
+      "answer": "Paneer"
+    }
+  ]
+}
