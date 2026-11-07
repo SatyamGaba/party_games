@@ -49,7 +49,7 @@ Caddy handles HTTPS and WebSocket upgrades. Only publish the proxy endpoint; the
 
 ## Game behavior
 
-Roll the Dice supports 1–24 players and separate display clients. The host plays and starts each round. Players lock one guess from 1–6; guesses are private until reveal. Once all eligible players answer, a cryptographic server roll is animated for 2.8 seconds, then exact matches receive 10 points each.
+Roll the Dice supports 1–50 players and separate display clients. The host plays and starts each round. Players lock one guess from 1–6; guesses are private until reveal. Once all eligible players answer, a cryptographic server roll is animated for 2.8 seconds, then exact matches receive 10 points each.
 
 Late arrivals wait in the waiting room until the current round ends (`lateJoin: "between-rounds"` in the manifest). Unanswered guesses of disconnected players are skipped after 30 seconds. Accepted answers remain eligible. When the host leaves permanently, control goes to the earliest connected player; while the host is offline, any player may start the next round. Rooms disappear when no clients or reconnection reservations remain.
 

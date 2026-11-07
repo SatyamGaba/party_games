@@ -113,7 +113,10 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
         (p) => p.role === "player" && !p.departed,
       ).length >= LIMITS.players
     )
-      throw new ServerError(400, "This room has 24 players already.");
+      throw new ServerError(
+        400,
+        `This room has ${LIMITS.players} players already.`,
+      );
     if (parsed.data.role === "player" && !back) {
       const wanted = parsed.data.name.trim().toLowerCase();
       for (const p of this.state.players.values())

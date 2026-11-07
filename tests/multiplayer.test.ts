@@ -281,13 +281,13 @@ describe("real Colyseus clients", () => {
   });
   it("counts only players toward the player limit", async () => {
     const host = await player();
-    for (let i = 1; i < 24; i++) await player(host.roomId);
+    for (let i = 1; i < 50; i++) await player(host.roomId);
     await expect(
       new Client(endpoint).joinById(host.roomId, {
         name: "Overflow",
         role: "player",
       }),
-    ).rejects.toThrow("24 players");
+    ).rejects.toThrow("50 players");
     const display = await player(host.roomId, "display");
     expect(display.state.players.get(me(display))?.role).toBe("display");
   });

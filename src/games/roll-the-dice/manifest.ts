@@ -4,7 +4,7 @@ export const manifest = {
   description:
     "One lucky number. One big reveal. Pick your side and let the good times roll.",
   minPlayers: 1,
-  maxPlayers: 24,
+  maxPlayers: 50,
   tv: true,
   lateJoin: "between-rounds",
 } as const;
