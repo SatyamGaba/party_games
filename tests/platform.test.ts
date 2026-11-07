@@ -10,7 +10,7 @@ describe("shared helpers", () => {
       joinSchema.safeParse({ name: "Sam", role: "moderator" }).success,
     ).toBe(false);
     expect(joinSchema.parse({ role: "display" }).role).toBe("display");
-    expect(codeSchema.parse(" abcde ")).toBe("ABCDE");
+    expect(codeSchema.parse(" abcd ")).toBe("ABCD");
     expect(codeSchema.safeParse("ABCDE123").success).toBe(false);
   });
   it("acknowledges exact retries but rejects changes or a second identity", () => {
