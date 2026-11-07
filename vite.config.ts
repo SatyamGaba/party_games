@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       "/matchmake": "http://localhost:3000",
       "/health": "http://localhost:3000",
-      "^/[A-Za-z0-9_-]+/[A-Z2-9]{5}": {
+      "^/[A-Za-z0-9_-]+/[A-Z2-9]{4}": {
         target: "http://localhost:3000",
         ws: true,
       },
