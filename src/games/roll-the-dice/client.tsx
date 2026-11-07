@@ -69,7 +69,7 @@ export function DiceScreen({ session, connected, send }: GameScreenProps) {
   const [error, setError] = useState("");
   const [face, setFace] = useState(1);
   const [copied, setCopied] = useState(false);
-  const host = room.you === room.hostId;
+  const host = room.you === room.hostId || room.you === snapshot.screenId;
   const display = room.role === "display";
   const participating =
     game.roster.includes(room.you) && !game.skipped.includes(room.you);

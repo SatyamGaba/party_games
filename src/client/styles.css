@@ -786,6 +786,47 @@
   .tv-header h1 {
     @apply text-title;
   }
+  .tv-launcher {
+    flex: 1;
+    padding-top: 40px;
+  }
+  .tv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+  }
+  .tv-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 28px;
+    background: var(--surface);
+    color: var(--foreground);
+    box-shadow: var(--shadow);
+    text-align: left;
+  }
+  .tv-tile svg {
+    width: 64px;
+    height: 64px;
+    color: var(--accent);
+  }
+  .tv-tile strong {
+    font-size: 28px;
+    letter-spacing: -1px;
+  }
+  .tv-tile span {
+    @apply text-label;
+    color: var(--muted);
+  }
+  .tv-tile:not(:disabled):hover,
+  .tv-tile:not(:disabled):focus-visible {
+    border-color: var(--accent);
+    transform: scale(1.03);
+  }
   .tv-code {
     @apply flex items-center gap-3;
     justify-self: end;
@@ -956,6 +997,29 @@
     font-size: 5vh;
     letter-spacing: 0.5vh;
     line-height: 1;
+  }
+  [data-mode="tv"] .tv-launcher {
+    padding-top: 5vh;
+  }
+  [data-mode="tv"] .tv-grid {
+    grid-template-columns: repeat(auto-fill, minmax(34vh, 1fr));
+    gap: 3vh;
+    margin-top: 2.5vh;
+  }
+  [data-mode="tv"] .tv-tile {
+    gap: 1.2vh;
+    padding: 3.5vh;
+    border-radius: 3vh;
+  }
+  [data-mode="tv"] .tv-tile svg {
+    width: 8vh;
+    height: 8vh;
+  }
+  [data-mode="tv"] .tv-tile strong {
+    font-size: 3.4vh;
+  }
+  [data-mode="tv"] .tv-tile span {
+    font-size: 1.8vh;
   }
   [data-mode="tv"] .notice {
     margin: 1.5vh 0 0;

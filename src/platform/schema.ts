@@ -14,6 +14,7 @@ export const PartyState = schema(
   {
     gameId: t.string().default(""),
     hostId: t.string().default(""),
+    screenId: t.string().default(""),
     players: t.map(ParticipantState),
   },
   "PartyState",

@@ -1,5 +1,6 @@
 import { lazy, type ComponentType } from "react";
-import type { GameScreenProps } from "../platform/contracts";
+import { Dice5, type LucideIcon } from "lucide-react";
+import type { GameManifest, GameScreenProps } from "../platform/contracts";
 const DiceScreen = lazy(() =>
   import("./roll-the-dice/client").then((module) => ({
     default: module.DiceScreen,
@@ -7,15 +8,10 @@ const DiceScreen = lazy(() =>
 );
 import { manifest } from "./roll-the-dice/manifest";
 export interface ClientGame {
-  manifest: {
-    id: string;
-    name: string;
-    description: string;
-    minPlayers: number;
-    maxPlayers: number;
-  };
+  manifest: GameManifest;
   Screen: ComponentType<GameScreenProps>;
+  Icon: LucideIcon;
 }
 export const clientGames: Record<string, ClientGame> = {
-  [manifest.id]: { manifest, Screen: DiceScreen },
+  [manifest.id]: { manifest, Screen: DiceScreen, Icon: Dice5 },
 };

@@ -10,6 +10,7 @@ import { DiceRoomState, Guess } from "./schema";
 import { manifest } from "./manifest";
 const answerSchema = z.number().int().min(1).max(6);
 export class DiceRoom extends PartyRoom<DiceRoomState> {
+  protected allowsDisplay = manifest.tv;
   protected rollDelayMs = 2800;
   private submissions = new SubmissionLedger();
   private result: number | null = null;

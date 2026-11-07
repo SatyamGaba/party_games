@@ -161,6 +161,24 @@ describe("real Colyseus clients", () => {
     expect(restored.state.game.guesses.get(id)?.value).toBe(5);
     expect(guest.state.game.guesses.get(id)?.value).toBeUndefined();
   });
+  it("lets a TV create and host a room alongside the first phone", async () => {
+    const tv = await new Client(endpoint).create<DiceRoomState>(
+      "roll-the-dice",
+      { role: "display" },
+    );
+    clients.push(tv);
+    await waitFor(() => Boolean(tv.state?.game));
+    expect(tv.state.screenId).toBe(tv.sessionId);
+    expect(tv.state.hostId).toBe("");
+    expect((await request(tv, "start")).ok).toBe(false);
+    const phone = await player(tv.roomId);
+    await waitFor(() => tv.state.hostId === phone.sessionId);
+    expect((await request(tv, "start")).ok).toBe(true);
+    await waitFor(() => phone.state.game.phase === "betting");
+    expect((await bet(tv, 5)).ok).toBe(false);
+    const second = await player(tv.roomId, "display");
+    expect((await request(second, "start")).ok).toBe(false);
+  });
   it("counts only players toward the player limit", async () => {
     const host = await player();
     for (let i = 1; i < 24; i++) await player(host.roomId);

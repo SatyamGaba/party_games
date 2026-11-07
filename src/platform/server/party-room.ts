@@ -30,6 +30,9 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
   maxClients = LIMITS.clients;
   maxMessagesPerSecond = LIMITS.messagesPerSecond;
   patchRate = 50;
+  /** Games without a shared-screen view set this to false. */
+  protected allowsDisplay = true;
+  private firstJoin = true;
   protected abstract initialState(): S;
   protected abstract configure(): void;
   protected participantLeft(_id: string): void {}
@@ -45,6 +48,8 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
     const parsed = joinSchema.safeParse(options);
     if (!parsed.success)
       throw new ServerError(400, parsed.error.issues[0].message);
+    if (parsed.data.role === "display" && !this.allowsDisplay)
+      throw new ServerError(400, "This game is played on phones only.");
     if (
       parsed.data.role === "player" &&
       [...this.state.players.values()].filter(
@@ -65,6 +70,10 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
     client.view = new StateView();
     if (role === "player" && !this.state.hostId)
       this.state.hostId = client.sessionId;
+    // A screen that creates the room hosts it alongside the first phone.
+    if (role === "display" && this.firstJoin)
+      this.state.screenId = client.sessionId;
+    this.firstJoin = false;
     this.participantJoined(client);
     log("participant_joined", {
       room: this.roomId,
@@ -108,6 +117,7 @@ export abstract class PartyRoom<S extends PartyState> extends Room<{
     return player;
   }
   protected requireHost(client: Client) {
+    if (client.sessionId === this.state.screenId) return;
     this.requirePlayer(client);
     if (client.sessionId !== this.state.hostId)
       throw new UserError("Only the host can start a round.");

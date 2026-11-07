@@ -163,6 +163,8 @@ export function answerSubmission(
 export function leaveRoom() {
   ++epoch;
   const room = active;
+  const home =
+    useSessionStore.getState().room?.role === "display" ? "/tv" : "/";
   active = null;
   forget();
   useSessionStore.setState({
@@ -172,7 +174,7 @@ export function leaveRoom() {
     error: "",
   });
   void room?.leave();
-  history.replaceState(null, "", "/");
+  history.replaceState(null, "", home);
 }
 let booted = false;
 export function useRoomConnection() {

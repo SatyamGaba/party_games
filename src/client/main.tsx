@@ -25,6 +25,7 @@ import {
 } from "../components/ui";
 import { useRoomConnection, enterRoom } from "../platform/client/session";
 import { clientGames } from "../games/registry.client";
+import type { GameManifest } from "../platform/contracts";
 import { clientError } from "../lib/errors";
 import "@fontsource-variable/inter";
 import "./styles.css";
@@ -57,13 +58,14 @@ function App() {
   const [busy, setBusy] = useState(false);
   const game = room ? clientGames[room.snapshot.gameId] : null;
   const tv = room?.role === "display";
+  const launcher = !room && location.pathname === "/tv";
   useEffect(() => {
     if (room) setModal(null);
   }, [room?.code]);
   useEffect(() => {
-    if (tv) document.documentElement.dataset.mode = "tv";
+    if (tv || launcher) document.documentElement.dataset.mode = "tv";
     else delete document.documentElement.dataset.mode;
-  }, [tv]);
+  }, [tv, launcher]);
   const [fullscreen, setFullscreen] = useState(false);
   useEffect(() => {
     const sync = () => setFullscreen(document.fullscreenElement !== null);
@@ -91,6 +93,66 @@ function App() {
       setBusy(false);
     }
   }
+  async function hostFromTv(manifest: GameManifest) {
+    if (!manifest.tv || busy) return;
+    setBusy(true);
+    setError("");
+    try {
+      await enterRoom({ gameId: manifest.id, role: "display", name: "" });
+    } catch (error) {
+      setError(clientError(error));
+    } finally {
+      setBusy(false);
+    }
+  }
+  if (launcher)
+    return (
+      <div className="shell">
+        <ThemeColor />
+        <header className="tv-header">
+          <div className="tv-actions">
+            <Button
+              variant="secondary"
+              size="small"
+              onClick={toggleFullscreen}
+              aria-label={fullscreen ? "Exit full screen" : "Full screen"}
+            >
+              {fullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+            </Button>
+          </div>
+          <h1>Party</h1>
+          <div className="tv-code">
+            <span className={"status-dot " + (online && ready ? "live" : "")} />
+            <span>{location.host}</span>
+          </div>
+        </header>
+        {error && <Notice onDismiss={() => setError("")}>{error}</Notice>}
+        <main className="tv-launcher">
+          <p className="eyebrow">PICK A GAME TO HOST</p>
+          <div className="tv-grid">
+            {Object.values(clientGames).map(({ manifest, Icon }) => (
+              <button
+                key={manifest.id}
+                className="tv-tile"
+                disabled={!manifest.tv || busy || !ready}
+                onClick={() => void hostFromTv(manifest)}
+              >
+                <Icon strokeWidth={1.3} />
+                <strong>{manifest.name}</strong>
+                <span>
+                  {manifest.tv
+                    ? manifest.minPlayers +
+                      "–" +
+                      manifest.maxPlayers +
+                      " players"
+                    : "Phone only · start it from your phone"}
+                </span>
+              </button>
+            ))}
+          </div>
+        </main>
+      </div>
+    );
   return (
     <div className="shell">
       <ThemeColor />
@@ -195,7 +257,10 @@ function App() {
             <Button variant="primary" onClick={() => setModal("join")}>
               Join a room <ArrowUpRight size={19} />
             </Button>
-            <Button variant="secondary" onClick={() => setModal("display")}>
+            <Button
+              variant="secondary"
+              onClick={() => location.assign("/tv")}
+            >
               <Monitor size={19} /> Open on a TV
             </Button>
           </div>
