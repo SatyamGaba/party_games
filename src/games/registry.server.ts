@@ -1,2 +1,6 @@
 import { DiceRoom } from "./roll-the-dice/server";
-export const serverGames = { "roll-the-dice": DiceRoom };
+import { UndercoverRoom } from "./undercover/server";
+export const serverGames = {
+  "roll-the-dice": DiceRoom,
+  undercover: UndercoverRoom,
+};

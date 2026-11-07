@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import { ThemeProvider, useTheme } from "next-themes";
 import {
   ArrowUpRight,
-  Dice5,
   Monitor,
   Users,
   Check,
@@ -153,7 +152,9 @@ function App() {
         }
         description={
           modal === "create"
-            ? "You'll be the host and a player. Share your room code to get everyone in."
+            ? chosen?.hostPlays === false
+              ? "You'll host and moderate from this phone. Share your room code to get everyone in."
+              : "You'll be the host and a player. Share your room code to get everyone in."
             : modal === "display"
               ? "This screen follows the action. Use your phone to play."
               : "Enter your host's room code and choose a name."
@@ -394,11 +395,11 @@ function App() {
               <h2>Pick your next obsession</h2>
             </div>
             <div className="game-grid">
-              {Object.values(clientGames).map(({ manifest }) => (
+              {Object.values(clientGames).map(({ manifest, Icon }) => (
                 <Card className="game-card" key={manifest.id}>
                   <div className="card-art">
                     <div className="art-halo" />
-                    <Dice5 className="hero-die" strokeWidth={1.3} />
+                    <Icon className="hero-die" strokeWidth={1.3} />
                   </div>
                   <div className="card-body">
                     <div className="tags">

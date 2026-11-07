@@ -22,6 +22,8 @@ export interface GameManifest {
   /** Whether the game has a shared-screen view a TV can host from. */
   tv: boolean;
   lateJoin: LateJoin;
+  /** False when the host only moderates and doesn't play. Defaults to true. */
+  hostPlays?: boolean;
 }
 export interface RoomSnapshot {
   gameId: string;

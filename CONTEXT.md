@@ -83,13 +83,7 @@ A player leaving the room for good is Ousted without a Vote. Their role stays hi
 Host setting at game start: whether the host sees every player's word and role (**Reveal roles**) or sees only settings, progress and controls (**Hide roles**). The host is always a person on a phone; the Shared screen is display-only and never shows secrets.
 
 **Built-in pairs**:
-The curated Word pairs shipped with the game, grouped by category. The host can limit them to chosen categories.
-
-**Custom pairs**:
-Word pairs the host uploads from a CSV file picked on their phone. Each row is two words and an optional category. Custom pairs last for the life of the room, up to 1,000, and are never shared with other rooms. Invalid rows are skipped and reported to the host.
-
-**Pair source**:
-Host setting at game start: Word pairs come from **Custom pairs only** or from **Built-in pairs plus Custom pairs**. Without an upload, Built-in pairs are used. A pair is not repeated within a room.
+The curated Word pairs shipped with the game, grouped by category. They are the only source of words: hosts cannot add their own. The host can limit play to chosen categories. A pair is not repeated within a room until every pair in the chosen categories has been used.
 
 **Side assignment**:
 Which word of a pair goes to Civilians and which to the Undercover is chosen at random each game.
