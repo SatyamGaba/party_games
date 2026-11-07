@@ -312,6 +312,18 @@ function App() {
         </a>
         <div className="header-right">
           <ConnectionStatus live={online && ready} inRoom={!!room} />
+          {!room && (
+            <Button
+              variant="ghost"
+              size="small"
+              className="tv-open"
+              aria-label="Open on a TV"
+              onClick={() => location.assign("/tv")}
+            >
+              <Monitor size={18} />
+              <span className="tv-open-label">TV</span>
+            </Button>
+          )}
           <ThemeMenu />
           {room && (
             <Button variant="secondary" size="small" onClick={leave}>
@@ -379,14 +391,6 @@ function App() {
             <br />
             Pick a game, grab your phones, and make a night of it.
           </p>
-          <div className="home-actions">
-            <Button
-              variant="secondary"
-              onClick={() => location.assign("/tv")}
-            >
-              <Monitor size={19} /> Open on a TV
-            </Button>
-          </div>
           <section className="shelf">
             <div className="section-heading">
               <h2>Pick your next obsession</h2>

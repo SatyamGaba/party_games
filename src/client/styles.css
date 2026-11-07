@@ -276,10 +276,6 @@
     margin-top: 24px;
     line-height: 1.7;
   }
-  .home-actions {
-    @apply flex flex-wrap gap-3;
-    margin-top: 28px;
-  }
   .shelf {
     margin-top: 60px;
   }
@@ -891,6 +887,7 @@
   .site-header {
     min-height: 82px;
   }
+  .tv-open-label,
   .brand-sub {
     display: none;
   }
