@@ -32,10 +32,11 @@ async function waitFor(predicate: () => boolean, timeout = 4000) {
 function me(room: Room<unknown, DiceRoomState>) {
   return room.state.seats.get(room.sessionId) ?? "";
 }
+let guests = 0;
 async function player(code?: string, role = "player") {
   const sdk = new Client(endpoint);
   const room = code
-    ? await sdk.joinById<DiceRoomState>(code, { name: "Guest", role })
+    ? await sdk.joinById<DiceRoomState>(code, { name: `Guest${++guests}`, role })
     : await sdk.create<DiceRoomState>("roll-the-dice", { name: "Host" });
   clients.push(room);
   await waitFor(() => Boolean(room.state?.game));
@@ -71,6 +72,15 @@ afterAll(async () => {
   rmSync(data, { recursive: true, force: true });
 });
 describe("real Colyseus clients", () => {
+  it("rejects a second player with the same name, ignoring case", async () => {
+    const host = await player();
+    const sdk = new Client(endpoint);
+    await expect(
+      sdk.joinById(host.roomId, { name: " hOST ", role: "player" }),
+    ).rejects.toThrow(/already taken/);
+    const other = await player(host.roomId);
+    expect(other.state.players.size).toBe(2);
+  });
   it("serves health and validates joining", async () => {
     expect((await fetch(endpoint + "/health")).ok).toBe(true);
     await expect(
