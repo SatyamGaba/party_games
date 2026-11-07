@@ -34,14 +34,14 @@ Host actions synchronize the TV and player screens in real time.
 
 ## Question flow
 
-1. Start question selects the current question and presents its public content; buzzers are not yet open.
-2. Open buzzers begins the race. An early buzz locks that player out for the entire question without deducting points.
+1. Start question begins a three-second countdown on the TV, alongside the scorecard.
+2. When the countdown ends, the question appears and buzzers open automatically. A buzz during the countdown locks that player out for the entire question without deducting points.
 3. The first eligible buzz selects the answering player, hides the TV hint, stops audio/video, and disables other buzzers. There is no queue carried into another attempt.
 4. The host judges the spoken answer. A wrong answer carries a point penalty and locks the player out for the rest of that question.
-5. The host can reopen the question or move on. Reopening restores the hint and restarts audio/video from the beginning; buzzers stay closed until Open buzzers. All existing early-buzz and wrong-answer lockouts persist.
+5. The host can reopen the question or move on. Reopening starts another countdown, then restores the hint, restarts audio/video from the beginning, and opens buzzers. All existing early-buzz and wrong-answer lockouts persist.
 6. Reveal answer is a separate host action that publicly shows the prepared answer and permanently closes the question to further buzzing. Judging an answer does not reveal it.
 
-Undo last verdict reverses the latest verdict and its points on the current question, restores that player's eligibility, and leaves buzzers closed until the host continues. Manual score adjustments remain intact.
+Undo last verdict reverses the latest verdict and its points on the current question, restores that player's eligibility, and starts a new countdown before buzzers reopen. Manual score adjustments remain intact.
 
 ## Scoring
 

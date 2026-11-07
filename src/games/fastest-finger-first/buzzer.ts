@@ -38,19 +38,42 @@ export function useBuzzerSound(ticking = false) {
       }).catch(() => setEnabled(false));
     } catch { setEnabled(false); }
   }, []);
+  const playVerdict = useCallback((correct: boolean) => {
+    const audio = context.current;
+    if (!audio || audio.state !== "running") return;
+    const notes = correct ? [523.25, 659.25, 783.99] : [392, 329.63, 261.63];
+    const now = audio.currentTime;
+    notes.forEach((frequency, index) => {
+      const tone = audio.createOscillator();
+      const gain = audio.createGain();
+      const start = now + index * 0.13;
+      tone.type = "sine";
+      tone.frequency.setValueAtTime(frequency, start);
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.16, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.24);
+      tone.connect(gain).connect(audio.destination);
+      tone.onended = () => { tone.disconnect(); gain.disconnect(); };
+      tone.start(start);
+      tone.stop(start + 0.25);
+    });
+  }, []);
   useEffect(() => {
     if (!ticking || !enabled) return;
     const audio = context.current;
     if (!audio) return;
     let activeTone: OscillatorNode | null = null;
+    let tickHigh = false;
     function tick() {
       if (!audio || audio.state !== "running") return;
       const tone = audio.createOscillator();
       const gain = audio.createGain();
       tone.type = "sine";
-      tone.frequency.setValueAtTime(1400, audio.currentTime);
+      tickHigh = !tickHigh;
+      tone.frequency.setValueAtTime(tickHigh ? 720 : 580, audio.currentTime);
+      tone.frequency.exponentialRampToValueAtTime(tickHigh ? 500 : 400, audio.currentTime + 0.045);
       gain.gain.setValueAtTime(0, audio.currentTime);
-      gain.gain.linearRampToValueAtTime(0.28, audio.currentTime + 0.003);
+      gain.gain.linearRampToValueAtTime(0.12, audio.currentTime + 0.006);
       gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.06);
       tone.connect(gain).connect(audio.destination);
       activeTone = tone;
@@ -63,12 +86,12 @@ export function useBuzzerSound(ticking = false) {
       tone.stop(audio.currentTime + 0.07);
     }
     tick();
-    const timer = window.setInterval(tick, 500);
+    const timer = window.setInterval(tick, 1000);
     return () => {
       window.clearInterval(timer);
       activeTone?.stop();
     };
   }, [ticking, enabled]);
   useEffect(() => () => { void context.current?.close().catch(() => undefined); context.current = null; }, []);
-  return { enable, enabled, play };
+  return { enable, enabled, play, playVerdict };
 }

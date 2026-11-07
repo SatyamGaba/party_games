@@ -42,6 +42,7 @@ export interface PlayerStats {
 export interface GameView {
   phase: Phase;
   paused: boolean;
+  countdown: number;
   revision: number;
   scope: string;
   game: number;

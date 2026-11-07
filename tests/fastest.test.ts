@@ -118,6 +118,18 @@ afterAll(async () => {
   else process.env.DATA_DIR = originalEnv.data;
 });
 describe("Fastest Finger First with real phones and TV", () => {
+  it("opens automatically after the countdown while keeping early players locked out", async () => {
+    const { host, alice, bob, tv } = await prepare();
+    expect(tv.state.game.countdown).toBe(3);
+    expect((await buzz(alice)).ok).toBe(true);
+    await waitFor(() => host.state.game.locks.has(me(alice)));
+    await waitFor(() => tv.state.game.phase === "open", 5000);
+    expect(tv.state.game.countdown).toBe(0);
+    expect((await buzz(alice)).ok).toBe(false);
+    expect((await buzz(bob)).ok).toBe(true);
+    await waitFor(() => host.state.game.phase === "answering");
+    expect(host.state.game.answering).toBe(me(bob));
+  });
   it("keeps answers private, rejects unauthorized controls, locks early buzzes, and admits late arrivals on the next question", async () => {
     const { host, alice, bob, tv } = await prepare();
     expect(host.state.game.host.answer).toBe("PRIVATE ONE");

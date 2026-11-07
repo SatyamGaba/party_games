@@ -25,6 +25,7 @@ export const FastestGameState = schema(
   {
     phase: t.string().default("lobby"),
     paused: t.boolean().default(false),
+    countdown: t.number().default(0),
     revision: t.number().default(0),
     scope: t.string().default(""),
     game: t.number().default(0),

@@ -55,7 +55,7 @@ Late arrivals wait in the waiting room until the current round ends (`lateJoin: 
 
 ## Fastest Finger First
 
-A non-playing host controls questions, judging, and scores from a private screen. Players get a phone buzzer; an optional TV shows text, images, audio, or video. Start question and Open buzzers are separate actions. Early buzzing locks a player out without deducting points. Wrong answers deduct points and lock the player out; reopening starts a fresh race among the remaining players.
+A non-playing host controls questions, judging, and scores from a private screen. Players get a phone buzzer; an optional TV shows text, images, audio, or video. Starting a question begins a three-second countdown; the question appears and buzzers open automatically afterward. Early buzzing locks a player out without deducting points. Wrong answers deduct points and lock the player out; reopening starts a fresh race among the remaining players.
 
 Default scoring is +10/−5, configurable per question during play. The host can undo the latest verdict, edit individual totals through More options, pause, reveal answers, end the game, and navigate the final statistics slideshow. A host disconnection pauses play without transferring private controls to players. Another game in the same room resets scores and stats while retaining saved results.
 

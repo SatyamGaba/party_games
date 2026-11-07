@@ -61,6 +61,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
   const buzzer = useBuzzerSound(
     display && connected && !game.paused && game.questionType === "text" && game.phase === "open",
   );
+  const showingScoreIntro = display && game.phase === "ready" && !game.paused;
   const previousBuzz = useRef({ scope: game.scope, answering: game.answering });
   useEffect(() => {
     const previous = previousBuzz.current;
@@ -70,6 +71,15 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
       buzzer.play();
     }
   }, [display, connected, game.scope, game.answering, game.phase, game.paused, buzzer.enabled, buzzer.play]);
+  const previousPhase = useRef(game.phase);
+  useEffect(() => {
+    const previous = previousPhase.current;
+    previousPhase.current = game.phase;
+    if (display && connected && !game.paused && buzzer.enabled &&
+        previous === "answering" && game.phase === "judged") {
+      buzzer.playVerdict(game.verdict === "Correct");
+    }
+  }, [display, connected, game.phase, game.paused, game.verdict, buzzer.enabled, buzzer.playVerdict]);
   const { act, busy, error, clearError } = useGameAction(send, game.revision);
   const [packChoice, setPackChoice] = useState(""),
     [questionChoice, setQuestionChoice] = useState("");
@@ -107,7 +117,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
     !raceAvailable ||
     Boolean(ownLock) ||
     !game.roster.includes(you);
-  const showHint = !game.paused && ["ready", "open"].includes(game.phase);
+  const showHint = !game.paused && game.phase === "open";
   const slides = resultSlides(players.length);
 
   function packControls() {
@@ -218,13 +228,6 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
               </div>
             )}
             <div className="fff-actions">
-              <Button
-                variant="primary"
-                disabled={disabled || game.paused || game.phase !== "ready"}
-                onClick={() => act("openBuzzers")}
-              >
-                <Play size={17} /> Open buzzers
-              </Button>
               <Button
                 variant="secondary"
                 disabled={
@@ -350,17 +353,22 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
     if (game.phase === "ended") return <Results game={game} nameOf={nameOf} />;
     return (
       <section className="fff-stage" aria-label="Game screen">
+        {display && !game.paused && game.phase === "judged" && (
+          <div className={`fff-verdict-effects ${game.verdict === "Correct" ? "fff-confetti" : "fff-crying"}`} aria-hidden="true" key={`${game.scope}:${game.verdict}`}>
+            {Array.from({ length: game.verdict === "Correct" ? 24 : 8 }, (_, index) => (
+              <span key={index} style={{ left: `${5 + ((index * 37) % 90)}%`, animationDelay: `${(index % 6) * 0.12}s` }}>
+                {game.verdict === "Correct" ? "" : "😢"}
+              </span>
+            ))}
+          </div>
+        )}
         {display && (
           <>
-            <p className="eyebrow">{game.packTitle || "GET READY TO BUZZ"}</p>
-            <h2 aria-live="polite">{phaseLabel(game)}</h2>
+            {game.phase !== "open" && <h2 aria-live="polite">{phaseLabel(game)}</h2>}
           </>
         )}
         {display && game.answering && !game.paused && (
           <div className="fff-answering">
-            <span className="player-avatar">
-              {nameOf(game.answering).slice(0, 1).toUpperCase()}
-            </span>
             <strong>{nameOf(game.answering)}</strong>
             <span>
               {game.phase === "answering"
@@ -459,8 +467,8 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
           <p className="eyebrow">YOU RUN THE SHOW</p>
         </div>
       )}
-      <div className="room-layout">
-        <section className="play-panel">
+      <div className={`room-layout ${display && (showingScoreIntro || !active) ? "fff-tv-full" : display ? "fff-tv-sidebar-layout" : ""}`}>
+        {!showingScoreIntro && <section className={`play-panel ${display && !game.paused && game.phase === "open" ? "fff-tv-buzz-open" : display && !game.paused && game.phase === "answering" ? "fff-tv-buzz-won" : display && !game.paused && game.phase === "judged" ? (game.verdict === "Correct" ? "fff-tv-correct" : "fff-tv-wrong") : ""}`}>
           <div className="round-bar">
             <span>
               {game.questionNumber
@@ -508,14 +516,35 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
             </details>
           )}
           {error && <Notice onDismiss={clearError}>{error}</Notice>}
-        </section>
-        <aside className="score-panel">
+        </section>}
+        {display && active && !showingScoreIntro && (
+          <aside className="fff-tv-sidebar" aria-label="Rules and top scores">
+            <section className="fff-tv-rules">
+              <h2>Scoring</h2>
+              <p><span>Correct</span><strong>+{game.reward}</strong></p>
+              <p><span>Wrong</span><strong>−{game.penalty}</strong></p>
+              <p className="fff-tv-early">Early buzz locks you out for this question.</p>
+            </section>
+            <section className="fff-tv-top-scores">
+              <h2>Score Card</h2>
+              {players.slice(0, 4).map((player) => (
+                <div className="fff-tv-score-row" key={player.id}>
+                  <span>{player.rank}.</span>
+                  <strong>{nameOf(player.id)}</strong>
+                  <b>{player.score}</b>
+                </div>
+              ))}
+            </section>
+          </aside>
+        )}
+        {(!display || showingScoreIntro) && <aside className={`score-panel ${display ? "fff-tv-score-reveal" : ""} ${showingScoreIntro ? "fff-tv-score-intro" : ""}`}>
           <div className="section-heading">
             <h2>
               {game.phase === "ended" ? "The final scores" : "Score Card"}
             </h2>
             <span>{participants.length} PLAYERS</span>
           </div>
+          {showingScoreIntro && <div className="fff-countdown" role="status" aria-live="polite"><span>Question in</span><strong>{game.countdown}</strong></div>}
           <div className="players">
             {(players.length
               ? players.map((p) => p.id)
@@ -568,7 +597,7 @@ export function FastestScreen({ session, connected, send }: GameScreenProps) {
               ▣ Open shared screen ↗
             </a>
           )}
-        </aside>
+        </aside>}
       </div>
       <footer className="fff-room-code">
         <span>Room code</span> <strong>{session.code}</strong>

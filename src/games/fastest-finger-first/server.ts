@@ -27,6 +27,7 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
   private adjustments: Record<string, number> = {};
   private instanceId = randomUUID();
   private pending = false;
+  private countdownGeneration = 0;
 
   protected initialState() {
     return new FastestRoomState().assign({ gameId: manifest.id });
@@ -148,6 +149,7 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
         g.host.answer = next.answer;
         g.phase = "ready";
         this.newScope();
+        this.startCountdown();
         this.syncQuestions();
       },
     );
@@ -155,6 +157,8 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
       this.requireRunning();
       if (this.state.game.phase !== "ready")
         throw new UserError("Start or reopen a question first.");
+      this.countdownGeneration++;
+      this.state.game.countdown = 0;
       this.state.game.phase = "open";
       this.newScope();
     });
@@ -215,6 +219,7 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
       g.verdict = "";
       g.mediaEpoch++;
       this.newScope();
+      this.startCountdown();
     });
     this.action("undo", control, () => {
       this.requireRunning();
@@ -231,6 +236,7 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
       this.newScope();
       this.syncStats();
       this.syncLocks();
+      this.startCountdown();
     });
     this.action("reveal", control, () => {
       this.requireRunning();
@@ -238,6 +244,8 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
       if (!["ready", "open", "judged"].includes(g.phase))
         throw new UserError("Finish judging the answer before revealing.");
       g.answer = g.host.answer;
+      this.countdownGeneration++;
+      g.countdown = 0;
       g.phase = "revealed";
       g.answering = "";
       this.newScope();
@@ -286,11 +294,14 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
       g.paused = false;
       g.mediaEpoch++;
       this.newScope();
+      if (g.phase === "ready") this.startCountdown();
     });
     this.action("endGame", control, () => {
       if (["lobby", "ended"].includes(this.state.game.phase))
         throw new UserError("No active game to end.");
       const g = this.state.game;
+      this.countdownGeneration++;
+      g.countdown = 0;
       g.phase = "ended";
       g.paused = false;
       g.slide = 0;
@@ -307,6 +318,22 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
         g.slide = index;
       },
     );
+  }
+  private startCountdown() {
+    const g = this.state.game;
+    const generation = ++this.countdownGeneration;
+    g.countdown = 3;
+    const tick = () => {
+      if (generation !== this.countdownGeneration || g.paused || g.phase !== "ready") return;
+      g.countdown--;
+      if (g.countdown === 0) {
+        g.phase = "open";
+        g.revision++;
+      } else {
+        this.clock.setTimeout(tick, 1000);
+      }
+    };
+    this.clock.setTimeout(tick, 1000);
   }
   private requireRunning() {
     const g = this.state.game;
@@ -325,12 +352,16 @@ export class FastestRoom extends PartyRoom<FastestRoomState> {
   }
   private pause() {
     const g = this.state.game;
+    this.countdownGeneration++;
+    g.countdown = 0;
     g.paused = true;
     if (g.phase === "open") g.phase = "ready";
     this.newScope();
   }
   private clearQuestion() {
     const g = this.state.game;
+    this.countdownGeneration++;
+    g.countdown = 0;
     g.questionId = "";
     g.text = "";
     g.mediaUrl = "";
