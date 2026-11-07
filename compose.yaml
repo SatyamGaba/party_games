@@ -1,0 +1,14 @@
+services:
+  party-games:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "${PARTY_PORT:-3000}:3000"
+    environment:
+      PORT: 3000
+      DATA_DIR: /app/data
+    volumes:
+      - party-data:/app/data
+    init: true
+volumes:
+  party-data:
