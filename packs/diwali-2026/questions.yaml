@@ -165,6 +165,24 @@
       "answer": "Blinding Lights (The Weeknd)",
       "media": "media/blinding-lights.mp3",
       "end": 20
+    },
+    {
+      "id": "q26",
+      "type": "text",
+      "prompt": "Guess the movie: 🦽👟🍤🏓",
+      "answer": "Forrest Gump"
+    },
+    {
+      "id": "q27",
+      "type": "text",
+      "prompt": "Guess the movie: 🕉️📡🛸👽🌿🍁🚬☀️🏀🧠",
+      "answer": "Koi... Mil Gaya"
+    },
+    {
+      "id": "q28",
+      "type": "text",
+      "prompt": "Guess the movie: 🧠 🟡🔵🔴🟣",
+      "answer": "Inside Out"
     }
   ]
 }
