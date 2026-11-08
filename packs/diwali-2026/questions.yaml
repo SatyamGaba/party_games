@@ -156,6 +156,15 @@
       "text": "Name the movie.",
       "answer": "Judaai (1997)",
       "media": "media/mystery-movie.png"
+    },
+    {
+      "id": "q25",
+      "type": "audio",
+      "prompt": "Identify the song from its intro.",
+      "text": "Identify the song.",
+      "answer": "Blinding Lights (The Weeknd)",
+      "media": "media/blinding-lights.mp3",
+      "end": 20
     }
   ]
 }
