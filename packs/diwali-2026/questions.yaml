@@ -1,24 +1,334 @@
-title: Diwali 2026
-questions:
-  - id: festival
-    type: text
-    prompt: What is Diwali commonly known as the festival of?
-    text: Diwali is the festival of…?
-    answer: Lights
-
-  - id: lamps
-    type: text
-    prompt: What are the small oil lamps lit during Diwali called?
-    answer: Diyas
-
-  - id: floor-art
-    type: text
-    prompt: What is the decorative floor art often made with coloured powders called?
-    answer: Rangoli
-
-  - id: quick-maths
-    type: text
-    prompt: You light 12 diyas, then 8 more. How many are lit in total?
-    answer: "20"
-    reward: 10
-    penalty: 5
+{
+  "title": "Diwali 2026",
+  "questions": [
+    {
+      "id": "q01",
+      "type": "text",
+      "prompt": "In Zindagi Na Milegi Dobara, what activity does Arjun overcome his fear to try?",
+      "answer": "Scuba diving"
+    },
+    {
+      "id": "q02",
+      "type": "text",
+      "prompt": "In The Devil Wears Prada, what is the name of the fashion magazine Miranda Priestly runs?",
+      "answer": "Runway"
+    },
+    {
+      "id": "q03",
+      "type": "text",
+      "prompt": "In Welcome, which character paints the famous horse-and-donkey painting?",
+      "answer": "Majnu Bhai"
+    },
+    {
+      "id": "q04",
+      "type": "text",
+      "prompt": "In Harry Potter and the Prisoner of Azkaban, what magical map reveals people's locations?",
+      "answer": "Marauder's Map"
+    },
+    {
+      "id": "q05",
+      "type": "text",
+      "prompt": "In Om Shanti Om, what is Shah Rukh Khan's character's name in his second life?",
+      "answer": "Om Kapoor"
+    },
+    {
+      "id": "q06",
+      "type": "text",
+      "prompt": "In The Hangover, what animal do the friends discover in their hotel bathroom?",
+      "answer": "Tiger"
+    },
+    {
+      "id": "q07",
+      "type": "image",
+      "prompt": "Identify the movie from the spinning top.",
+      "answer": "Inception",
+      "media": "media/inception.jpg",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q08",
+      "type": "image",
+      "prompt": "Identify the movie from this campus scene.",
+      "answer": "3 Idiots",
+      "media": "media/3-idiots.jpg",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q09",
+      "type": "image",
+      "prompt": "Identify the movie from these pills.",
+      "answer": "The Matrix",
+      "media": "media/matrix.jpg",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q10",
+      "type": "image",
+      "prompt": "Identify the movie from the magical lamp.",
+      "answer": "Aladdin",
+      "media": "media/aladdin.jpg",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q11",
+      "type": "image",
+      "prompt": "Identify the movie from this train-platform scene.",
+      "answer": "Dilwale Dulhania Le Jayenge (accept DDLJ)",
+      "media": "media/ddlj.jpg",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q12",
+      "type": "audio",
+      "prompt": "Identify the song from its intro.",
+      "answer": "Ghungroo",
+      "media": "media/ghungroo.mp3",
+      "text": "Identify the song.",
+      "end": 20
+    },
+    {
+      "id": "q13",
+      "type": "audio",
+      "prompt": "Identify the song from its intro.",
+      "answer": "Blinding Lights",
+      "media": "media/blinding-lights.mp3",
+      "text": "Identify the song.",
+      "end": 20
+    },
+    {
+      "id": "q14",
+      "type": "audio",
+      "prompt": "Identify the song from its intro.",
+      "answer": "Chaiyya Chaiyya",
+      "media": "media/chaiyya-chaiyya.mp3",
+      "text": "Identify the song.",
+      "end": 20
+    },
+    {
+      "id": "q15",
+      "type": "audio",
+      "prompt": "Identify the song from its intro.",
+      "answer": "Billie Jean",
+      "media": "media/billie-jean.mp3",
+      "text": "Identify the song.",
+      "end": 20
+    },
+    {
+      "id": "q16",
+      "type": "audio",
+      "prompt": "Identify the movie from the dialogue.",
+      "answer": "Welcome",
+      "media": "media/control-uday-control.mp3",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q17",
+      "type": "audio",
+      "prompt": "Identify the movie from the dialogue.",
+      "answer": "The Dark Knight",
+      "media": "media/why-so-serious.mp3",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q18",
+      "type": "audio",
+      "prompt": "Identify the movie from the dialogue.",
+      "answer": "Uri: The Surgical Strike (accept Uri)",
+      "media": "media/hows-the-josh.mp3",
+      "text": "Identify the movie."
+    },
+    {
+      "id": "q19",
+      "type": "text",
+      "prompt": "Identify the Bollywood song: The sun became dim, the moon began to burn.",
+      "answer": "Suraj Hua Maddham",
+      "text": "The sun became dim, the moon began to burn."
+    },
+    {
+      "id": "q20",
+      "type": "text",
+      "prompt": "Identify the Bollywood song: This heart is still a child.",
+      "answer": "Dil Toh Bachcha Hai Ji",
+      "text": "This heart is still a child."
+    },
+    {
+      "id": "q21",
+      "type": "text",
+      "prompt": "Identify the Bollywood song: The bangles speak, the bracelets speak.",
+      "answer": "Bole Chudiyan",
+      "text": "The bangles speak, the bracelets speak."
+    },
+    {
+      "id": "q22",
+      "type": "text",
+      "prompt": "Identify the Bollywood song: One, two, three, four, five, six, seven, eight, nine, ten...",
+      "answer": "Ek Do Teen",
+      "text": "One, two, three, four, five, six, seven, eight, nine, ten..."
+    },
+    {
+      "id": "q23",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 👨‍🎓👨‍🎓👨‍🎓📚",
+      "answer": "3 Idiots",
+      "text": "👨‍🎓👨‍🎓👨‍🎓📚"
+    },
+    {
+      "id": "q24",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 🚢🧊💔",
+      "answer": "Titanic",
+      "text": "🚢🧊💔"
+    },
+    {
+      "id": "q25",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 👑👩‍🦰🇫🇷🍷",
+      "answer": "Queen",
+      "text": "👑👩‍🦰🇫🇷🍷"
+    },
+    {
+      "id": "q26",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 🧠💤🏙️🔄",
+      "answer": "Inception",
+      "text": "🧠💤🏙️🔄"
+    },
+    {
+      "id": "q27",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 👻🏰🔑🌀",
+      "answer": "Bhool Bhulaiyaa",
+      "text": "👻🏰🔑🌀"
+    },
+    {
+      "id": "q28",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 🧑‍🚀🌽🪐⏳",
+      "answer": "Interstellar",
+      "text": "🧑‍🚀🌽🪐⏳"
+    },
+    {
+      "id": "q29",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 👩‍❤️‍👨🚆🌾",
+      "answer": "Dilwale Dulhania Le Jayenge (accept DDLJ)",
+      "text": "👩‍❤️‍👨🚆🌾"
+    },
+    {
+      "id": "q30",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 🦖🏝️🚙",
+      "answer": "Jurassic Park",
+      "text": "🦖🏝️🚙"
+    },
+    {
+      "id": "q31",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: ⭐🌍⬇️🎨",
+      "answer": "Taare Zameen Par",
+      "text": "⭐🌍⬇️🎨"
+    },
+    {
+      "id": "q32",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 🏠🎄👦🪤",
+      "answer": "Home Alone",
+      "text": "🏠🎄👦🪤"
+    },
+    {
+      "id": "q33",
+      "type": "text",
+      "prompt": "Identify the movie from the emojis: 🧑‍⚕️❤️🤗🏥",
+      "answer": "Munna Bhai M.B.B.S.",
+      "text": "🧑‍⚕️❤️🤗🏥"
+    },
+    {
+      "id": "q34",
+      "type": "audio",
+      "prompt": "Identify the TV show from Hansa's dialogue.",
+      "answer": "Khichdi",
+      "media": "media/hello-how-are.mp3",
+      "text": "Identify the TV show."
+    },
+    {
+      "id": "q35",
+      "type": "image",
+      "prompt": "Which Indian children's show made this magical pencil famous?",
+      "answer": "Shaka Laka Boom Boom",
+      "media": "media/pencil.jpg",
+      "text": "Which children's show made this pencil famous?"
+    },
+    {
+      "id": "q36",
+      "type": "audio",
+      "prompt": "Identify the TV show from the theme.",
+      "answer": "Kyunki Saas Bhi Kabhi Bahu Thi",
+      "media": "media/kyunki-theme.mp3",
+      "text": "Identify the TV show."
+    },
+    {
+      "id": "q37",
+      "type": "image",
+      "prompt": "Identify the show featuring this robot girl.",
+      "answer": "Karishma Kaa Karishma",
+      "media": "media/karishma.jpg",
+      "text": "Identify the TV show."
+    },
+    {
+      "id": "q38",
+      "type": "video",
+      "prompt": "Identify the sitcom from this silent clip.",
+      "answer": "Sarabhai vs Sarabhai",
+      "media": "media/sarabhai-silent.mp4",
+      "text": "Identify the sitcom."
+    },
+    {
+      "id": "q39",
+      "type": "image",
+      "prompt": "Which superhero does this character transform into?",
+      "answer": "Shaktimaan",
+      "media": "media/gangadhar.jpg",
+      "text": "Which superhero does he become?"
+    },
+    {
+      "id": "q40",
+      "type": "image",
+      "prompt": "Which character repeatedly uses ACME inventions to catch Road Runner?",
+      "answer": "Wile E. Coyote",
+      "media": "media/acme.jpg",
+      "text": "Which character uses these inventions?"
+    },
+    {
+      "id": "q41",
+      "type": "image",
+      "prompt": "Name the cartoon from this farmhouse.",
+      "answer": "Courage the Cowardly Dog",
+      "media": "media/courage.jpg",
+      "text": "Name the cartoon."
+    },
+    {
+      "id": "q42",
+      "type": "image",
+      "prompt": "Name the Disney Channel show from this hotel lobby.",
+      "answer": "The Suite Life of Zack & Cody",
+      "media": "media/lobby.jpg",
+      "text": "Name the Disney Channel show."
+    },
+    {
+      "id": "q43",
+      "type": "image",
+      "prompt": "Name the cartoon featuring Spike and Tyke.",
+      "answer": "Tom and Jerry",
+      "media": "media/spike-tyke.jpg",
+      "text": "Name the cartoon."
+    },
+    {
+      "id": "q44",
+      "type": "image",
+      "prompt": "Which American sitcom inspired Karishma Kaa Karishma?",
+      "answer": "Small Wonder",
+      "media": "media/small-wonder-comparison.jpg",
+      "text": "Which American sitcom inspired the Indian show?"
+    }
+  ]
+}
