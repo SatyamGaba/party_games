@@ -91,7 +91,7 @@ describe("real Colyseus clients", () => {
     const host = await player();
     const guest = await player(host.roomId);
     const tv = await player(host.roomId, "display");
-    expect(host.roomId).toMatch(/^roll-the-dice-[A-HJ-NP-Z2-9]{4}$/);
+    expect(host.roomId).toMatch(/^roll-the-dice-[A-HJ-NP-Z]{4}$/);
     expect((await request(guest, "start")).ok).toBe(false);
     expect((await request(tv, "start")).ok).toBe(true);
     await waitFor(() => guest.state.game.phase === "betting");

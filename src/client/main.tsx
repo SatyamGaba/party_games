@@ -182,7 +182,7 @@ function App() {
               <Input
                 value={code}
                 onValueChange={(v) =>
-                  setCode(v.toUpperCase().replace(/[^A-Z0-9]/g, ""))
+                  setCode(v.toUpperCase().replace(/[^A-Z]/g, ""))
                 }
                 className="code-input"
                 maxLength={4}

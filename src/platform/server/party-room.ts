@@ -21,7 +21,7 @@ function allocateCode(gameId: string) {
   if (!codes) codesByGame.set(gameId, (codes = new Set()));
   if (codes.size >= 100)
     throw new ServerError(503, "Too many active rooms. Try again shortly.");
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ";
   let code: string;
   do {
     code = Array.from(
